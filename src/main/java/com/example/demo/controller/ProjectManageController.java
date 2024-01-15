@@ -30,4 +30,14 @@ public class ProjectManageController {
     public List<Project> projectsearch(Project project) {
         return projectMapper.GetProject(project);
     }
+
+    //项目信息修改
+    @RequestMapping(value = "/Changeproject", method = RequestMethod.POST)
+    public State ChangeProject(Project project) {
+        projectMapper.UpdateProject(project);
+        return new State("项目信息修改成功", project.getUser_id());
+    }
+
+
+
 }

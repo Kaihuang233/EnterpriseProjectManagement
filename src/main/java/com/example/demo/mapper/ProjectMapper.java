@@ -17,8 +17,10 @@ public interface ProjectMapper {
     @Select("select project_name, project_id, customer_name, project_overview, start_date, end_date, contract_amount from project where project_name=#{project_name}")
      List<Project> GetProject(Project project);
 
-//    @Update("update 周报 set ManagerName=#{ManagerName},WeekreptCom=#{WeekreptCom},ManageID=#{ManageID} where SaleID=#{SaleID}")
-//    public int udweekreport(WeeklyReport weeklyReport);
+    //修改项目信息
+    @Update("update project set project_name=#{project_name},customer_name=#{customer_name},project_overview=#{project_overview},start_date=#{start_date} ," +
+            "end_date=#{end_date}, contract_amount=#{contract_amount}, user_id=#{user_id} where project_id=#{project_id}")
+    int UpdateProject(Project project);
 
 
 }

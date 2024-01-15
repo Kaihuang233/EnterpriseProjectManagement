@@ -29,7 +29,7 @@ public class UserController {
         } else if (user.getPassword() == null) {//电话空
             return new State("请输入密码");
         } else if(!Objects.equals(usermapper.check(user.getUser_name()), user.getPassword())){//密码空
-            return new State("密码错误,请重新输入");
+            return new State("用户名或密码错误,请重新输入");
         }else{
             return new State("登录成功！", usermapper.getuser_id(user.getTelnum()), employeeMapper.get_type(usermapper.getuser_id(user.getTelnum())));
         }
