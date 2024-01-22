@@ -32,7 +32,7 @@ public interface ProjectMapper {
 
     //修改项目信息
     @Update("update project set project_name=#{project_name},customer_name=#{customer_name},project_overview=#{project_overview},start_date=#{start_date} ," +
-            "end_date=#{end_date}, contract_amount=#{contract_amount}, user_id=#{user_id} where project_id=#{project_id}")
+            "end_date=#{end_date}, contract_amount=#{contract_amount} where project_id=#{project_id}")
     int UpdateProject(Project project);
 
 

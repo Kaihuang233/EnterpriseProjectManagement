@@ -9,10 +9,7 @@ import ProjectManagement.service.MessageboradService;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @CrossOrigin(origins = "*")//跨域
 @RestController
@@ -22,12 +19,17 @@ public class MessageboradController implements MessageboradService {
 
     @Resource
     private EmployeeMapper employeeMapper;//实例化对象并注入
+
+    private Map<String, Object> map;
     //发表留言
     @RequestMapping(value = "/newMessage", method = RequestMethod.POST)
-    public State NewMessageborad(@RequestBody(required = false) Messageborad messageborad) {
+    public NewState NewMessageborad(@RequestBody(required = false) Messageborad messageborad) {
+        map = new TreeMap<>();
         messageborad.setType(employeeMapper.get_type(messageborad.getUser_id()));
         messageBoradMapper.CreateMessage(messageborad);
-        return new State("留言已发表", messageborad.getUser_id());
+
+        map.put("user_id", messageborad.getUser_id());
+        return new NewState("200", "留言已发表", map);
     }
 
 }

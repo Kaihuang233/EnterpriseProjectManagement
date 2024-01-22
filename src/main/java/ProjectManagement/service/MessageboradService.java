@@ -1,8 +1,9 @@
 package ProjectManagement.service;
 
 import ProjectManagement.entity.Messageborad;
+import ProjectManagement.entity.NewState;
 import ProjectManagement.entity.State;
 
 public interface MessageboradService {
-    State NewMessageborad(Messageborad messageborad);//发表留言
+    NewState NewMessageborad(Messageborad messageborad);//发表留言
 }
