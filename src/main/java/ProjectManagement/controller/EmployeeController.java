@@ -24,7 +24,7 @@ public class EmployeeController implements EmployeeService {
 
     //新增职员
     @RequestMapping(value = "/NewEmployee", method = RequestMethod.POST)
-    public State newemployee(Employee employee) {
+    public State newemployee(@RequestBody(required = false) Employee employee) {
         if(employee.getName().isEmpty()||employee.getMail().isEmpty()||employee.getTelnum().isEmpty()) {
             return new State("请补全信息");
         }
@@ -42,13 +42,13 @@ public class EmployeeController implements EmployeeService {
 
     //获得某日期空闲的员工列表
     @RequestMapping(value = "/GetEmpArrange", method = RequestMethod.POST)
-    public State getEmpArrange(Personnelarrangement personnelarrangement) {
+    public State getEmpArrange(@RequestBody(required = false) Personnelarrangement personnelarrangement) {
         return new State("员工id列表如下", personnelarrangementMapper.getperson(personnelarrangement));
     }
 
     //根据姓名获取员工信息
     @RequestMapping(value = "/GetEmpinfo", method = RequestMethod.POST)
-    public State getEmpinfo(Employee employee) {
+    public State getEmpinfo(@RequestBody(required = false) Employee employee) {
         if(Objects.equals(employee.getName(), "") || Objects.equals(employee.getPost(), ""))
             return new State("员工信息如下", employeeMapper.getinfo1(employee));
         else
@@ -57,7 +57,7 @@ public class EmployeeController implements EmployeeService {
 
     //将某员工设为离职
     @RequestMapping(value = "/delEmployee", method = RequestMethod.POST)
-    public State DelEmployee(Employee employee) {
+    public State DelEmployee(@RequestBody(required = false) Employee employee) {
         employee.setPost("离职");
         employee.setType("离职");
         employee.setSalary(0);
@@ -68,7 +68,7 @@ public class EmployeeController implements EmployeeService {
 
     //修改某员工信息
     @RequestMapping(value = "/UpdateEmployee", method = RequestMethod.POST)
-    public State UpdateEmployee(Employee employee) {
+    public State UpdateEmployee(@RequestBody(required = false) Employee employee) {
         employeeMapper.Upemployee(employee);
         return new State("员工信息已修改");
     }

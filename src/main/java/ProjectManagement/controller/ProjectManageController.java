@@ -21,7 +21,7 @@ public class ProjectManageController implements ProjectManagementService {
     ProjectValueMapper projectValueMapper;//实例化对象并注入
     //新建项目
     @RequestMapping(value = "/Newproject", method = RequestMethod.POST)
-    public State newproject(Project project) {
+    public State newproject(@RequestBody(required = false) Project project) {
         if (project.getContract_amount()==null)
             return new State("请保证信息输入完整");
         else {
@@ -35,13 +35,13 @@ public class ProjectManageController implements ProjectManagementService {
     }
     //项目信息查询
     @RequestMapping(value = "/ProjectSearch", method = RequestMethod.POST)
-    public State projectsearch(Project project) {
+    public State projectsearch(@RequestBody(required = false) Project project) {
         return new State("该项目信息如下", projectMapper.GetProject(project));
     }
 
     //项目信息修改
     @RequestMapping(value = "/Changeproject", method = RequestMethod.POST)
-    public State ChangeProject(Project project) {
+    public State ChangeProject(@RequestBody(required = false) Project project) {
         projectMapper.UpdateProject(project);
         return new State("项目信息修改成功", project.getUser_id());
     }

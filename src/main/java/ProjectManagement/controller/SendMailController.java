@@ -2,14 +2,17 @@ package ProjectManagement.controller;
 
 
 import ProjectManagement.entity.SendMail;
+import ProjectManagement.entity.User;
 import ProjectManagement.mapper.EmployeeMapper;
 import jakarta.annotation.Resource;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.thymeleaf.TemplateEngine;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import ProjectManagement.entity.State;
 import ProjectManagement.mapper.UsersMapper;
 
@@ -26,19 +29,18 @@ public class SendMailController {
     private EmployeeMapper employeeMapper;
 
     @RequestMapping(value = "/sendmail",method = RequestMethod.POST)
-    public State sendOne(String mail) {
-        if(mail == null)
+    public State sendOne(@RequestBody(required = false) User user) {
+        if(user.getMail() == null)
             return new State("请输入邮箱");
         String code = verificationCode();
-        sendMailService.sendTxtMail1(mail,"您好，您的验证码为：",code+" \n验证码在五分钟内有效，请尽快进行验证");
-        if(employeeMapper.check(mail)==null)
+        sendMailService.sendTxtMail1(user.getMail(),"您好，您的验证码为：",code+" \n验证码在五分钟内有效，请尽快进行验证");
+        if(employeeMapper.check(user.getMail())==null)
             return new State("邮箱不存在");
         else{
-            employeeMapper.updatecode(mail,code);//更新验证码
+            employeeMapper.updatecode(user.getMail(),code);//更新验证码
             return new State("发送成功");
         }
     }
-
 
     public static String verificationCode() {
         //生成六位随机正整数

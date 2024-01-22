@@ -10,10 +10,7 @@ import ProjectManagement.mapper.ProjectValueMapper;
 import ProjectManagement.entity.Projectvalue;
 import ProjectManagement.service.ProjectValueService;
 import jakarta.annotation.Resource;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.sql.Date;
 import java.text.SimpleDateFormat;
@@ -87,7 +84,7 @@ public class ProjectValueController implements ProjectValueService {
 
     //提交项目进度
     @RequestMapping(value = "/Newprogress", method = RequestMethod.POST)
-    public State newprogress(Projectvalue projectvalue) {
+    public State newprogress(@RequestBody(required = false) Projectvalue projectvalue) {
         if(projectValueMapper.existProjectvalue(projectvalue)==null){//第一次提交项目进度时会额外提交一个进度为0提交时间为项目起始日期的项目进度
             System.out.println(projectValueMapper.GetProjectvalue(projectvalue));
             Projectvalue p = new Projectvalue();
@@ -109,7 +106,7 @@ public class ProjectValueController implements ProjectValueService {
     }
     //获取该项目各月的人员产值
     @RequestMapping(value = "/getpersonvalue", method = RequestMethod.POST)
-    public State getpersonValue(Projectvalue projectvalue) {
+    public State getpersonValue(@RequestBody(required = false) Projectvalue projectvalue) {
         List<Integer> employee = personnelarrangementMapper.getpersonarrange(projectvalue.getProject_id());
         List<Map<String,Integer>> cp2 = new LinkedList<>();
         Map<String,Integer> cp22 = getallmonth(projectMapper.GetProjectSdate(projectvalue.getProject_id()), projectMapper.GetProjectEdate(projectvalue.getProject_id()));
@@ -127,7 +124,7 @@ public class ProjectValueController implements ProjectValueService {
     }
     //获取该项目各月的项目支撑产值
     @RequestMapping(value = "/getprojectvalue", method = RequestMethod.POST)
-    public State getprojectValue(Projectvalue projectvalue) {
+    public State getprojectValue(@RequestBody(required = false) Projectvalue projectvalue) {
         List<Projectvalue> list = projectValueMapper.GetProjectvalue(projectvalue);
         Date Dtemp = list.get(0).getChange_date();
         Integer Ptemp = list.get(0).getProject_progress();
@@ -170,7 +167,7 @@ public class ProjectValueController implements ProjectValueService {
 
     //计算某项目的各月产值
     @RequestMapping(value = "/getvalue", method = RequestMethod.POST)
-    public State getValue(Projectvalue projectvalue) {
+    public State getValue(@RequestBody(required = false) Projectvalue projectvalue) {
         List<Map<String,Integer>> cp = new LinkedList<>();
         Map<String,Integer> cp22 = getallmonth(projectMapper.GetProjectSdate(projectvalue.getProject_id()), projectMapper.GetProjectEdate(projectvalue.getProject_id()));
         cp.add(getpersonValue(projectvalue).getMap());
@@ -184,7 +181,7 @@ public class ProjectValueController implements ProjectValueService {
     }
     //获取某年项目支撑产值
     @RequestMapping(value = "/getannualProjectValue", method = RequestMethod.POST)
-    public State getannualProjectValue(Personnelarrangement personnelarrangement) {
+    public State getannualProjectValue(@RequestBody(required = false) Personnelarrangement personnelarrangement) {
         Map<String,Integer> map = getallmonth(personnelarrangement.getStart_date(), personnelarrangement.getEnd_date());//获取该年所有月，并将薪资设为0
         Projectvalue projectvalue = new Projectvalue();
         int[] id = projectValueMapper.getid();
@@ -206,7 +203,7 @@ public class ProjectValueController implements ProjectValueService {
     }
     //获取某年人员支撑产值
     @RequestMapping(value = "/getannualPersonValue", method = RequestMethod.POST)
-    public State getannualPersonValue(Personnelarrangement personnelarrangement){
+    public State getannualPersonValue(@RequestBody(required = false) Personnelarrangement personnelarrangement){
         List<Personnelarrangement> l1 = personnelArrangeController.Theyear(personnelarrangement);
         List<Personnelarrangement> l2 = personnelArrangeController.TheWholeyear(personnelarrangement);
         Map<String,Integer> map = getallmonth(personnelarrangement.getStart_date(), personnelarrangement.getEnd_date());//获取该年所有月，并将薪资设为0
@@ -233,7 +230,7 @@ public class ProjectValueController implements ProjectValueService {
 
     //获取某年总产值
     @RequestMapping(value = "/getannualValue", method = RequestMethod.POST)
-    public State getannualValue(Personnelarrangement personnelarrangement){
+    public State getannualValue(@RequestBody(required = false) Personnelarrangement personnelarrangement){
         List l1 = getannualPersonValue(personnelarrangement).getList();
         List l2 = getannualProjectValue(personnelarrangement).getList();
         List<Integer> l = new LinkedList<>();

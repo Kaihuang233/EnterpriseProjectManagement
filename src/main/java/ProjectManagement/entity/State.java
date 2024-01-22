@@ -23,6 +23,8 @@ public class State {
     private List list;
     @JsonProperty(value = "map")
     private Map map;
+
+
     public State(String msg){
         this.msg = msg;
     }
@@ -55,5 +57,9 @@ public class State {
         this.msg = msg;
         this.value = value;
         this.map = map;
+    }
+
+    public enum ErrorCode {
+        OK, INVALID_ARGUMENT_FORMAT, UNEXPECTED_ARGUMENT, INVALID_ARGUMENT_NAME
     }
 }

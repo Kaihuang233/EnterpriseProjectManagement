@@ -22,7 +22,7 @@ public class UserController implements UserService {
 
     //登录
     @RequestMapping(value = "/Login", method = RequestMethod.POST)
-    public State login(User user) {
+    public State login(@RequestBody(required = false)User user) {
         if(user.getUser_name() == null && user.getPassword() == null){
             return new State("请输入用户名和密码");
         } else if(user.getUser_name() == null){
@@ -38,7 +38,7 @@ public class UserController implements UserService {
 
     //注册
     @RequestMapping(value = "/SignUp", method = RequestMethod.POST)
-    public State register(User user, String mail, String code) {
+    public State register(@RequestBody(required = false)User user) {
         if(user.getUser_name() == null){
             return new State("请输入用户名");
         } else if(user.getTelnum() == null && user.getPassword() == null){//密码电话都空
@@ -49,7 +49,7 @@ public class UserController implements UserService {
             return new State("请输入密码");
         }else if(usermapper.checktelnum(user.getTelnum())!=null){//检查手机号有没有注册过
             return new State("注册失败，注册使用的手机号已存在");
-        }else if(!Objects.equals(employeeMapper.checkcode(mail), code)){
+        }else if(!Objects.equals(employeeMapper.checkcode(user.getMail()), user.getCode())){
             return new State("验证码错误，请重新输入");
         }else{
             usermapper.reg(user);
@@ -60,7 +60,7 @@ public class UserController implements UserService {
 
     //个人信息完善
     @RequestMapping(value = "/InformationCompletion1", method = RequestMethod.POST)
-    public State BasicInfoModify(Employee employee) {
+    public State BasicInfoModify(@RequestBody(required = false)Employee employee) {
         try {
             if (employee.getSex() == null || employee.getAge() == 0 || employee.getCity() == null)
                 return new State("请补全信息！");
@@ -74,13 +74,14 @@ public class UserController implements UserService {
     }
 
     @RequestMapping(value = "/InformationCompletion2", method = RequestMethod.POST)
-    public State ImportantInfoModify(User user, String mail, String code) {
-        if(Objects.equals(code, employeeMapper.checkcode(mail))) {
-            if(user.getTelnum() == null || user.getPassword() == null || mail == null)
+    public State ImportantInfoModify(@RequestBody(required = false)User user) {
+        System.out.println(user);
+        if(Objects.equals(user.getCode(), employeeMapper.checkcode(user.getMail()))) {
+            if(user.getTelnum() == null || user.getPassword() == null || user.getMail() == null)
                 return new State("请补全信息！");
             usermapper.updateimportant(user);
             employeeMapper.Set_tel(user.getTelnum(), user.getUser_id());
-            employeeMapper.Set_mail(mail, user.getUser_id());
+            employeeMapper.Set_mail(user.getMail(), user.getUser_id());
             return new State("信息修改成功！",user.getUser_id());
         }
         else

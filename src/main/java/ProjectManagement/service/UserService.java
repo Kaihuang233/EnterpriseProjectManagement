@@ -6,7 +6,7 @@ import ProjectManagement.entity.User;
 
 public interface UserService {
     State login(User user);
-    State register(User user, String mail, String code);
+    State register(User user);
     State BasicInfoModify(Employee employee);
-    State ImportantInfoModify(User user, String mail, String code);
+    State ImportantInfoModify(User user);
 }

@@ -31,7 +31,7 @@ public class PersonnelArrangeController implements PersonnelArrangeService {
 
     //获取某项目的人员安排列表
     @RequestMapping(value = "/Arrangement", method = RequestMethod.POST)
-    public State Arrangement(Personnelarrangement personnelarrangement) {
+    public State Arrangement(@RequestBody(required = false) Personnelarrangement personnelarrangement) {
         return new State("该项目人员安排如下", personnelarrangementMapper.getpersonarrange(personnelarrangement.getProject_id()));
     }
     //返回今年有项目的人员安排对象

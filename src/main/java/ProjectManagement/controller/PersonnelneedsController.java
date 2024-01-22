@@ -1,5 +1,6 @@
 package ProjectManagement.controller;
 
+import ProjectManagement.entity.Project;
 import ProjectManagement.mapper.PersonnelneedsMapper;
 import ProjectManagement.entity.Personnelneeds;
 import ProjectManagement.entity.State;
@@ -31,8 +32,8 @@ public class PersonnelneedsController implements PersonnelneedsService {
     }
     //获取该项目id的人员需求列表
     @RequestMapping(value = "/GetPersonneeds", method = RequestMethod.POST)
-    public State GetPersonnelneeds(int project_id) {
-        return new State("该项目的人员需求列表如下", personnelneedsMapper.getinfo(project_id));
+    public State GetPersonnelneeds(@RequestBody(required = false) Project project) {
+        return new State("该项目的人员需求列表如下", personnelneedsMapper.getinfo(project.getProject_id()));
     }
 }
 
