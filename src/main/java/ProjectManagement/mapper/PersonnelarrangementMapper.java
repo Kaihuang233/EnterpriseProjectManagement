@@ -1,11 +1,9 @@
 package ProjectManagement.mapper;
 
+import ProjectManagement.entity.Employee;
 import ProjectManagement.entity.Personnelarrangement;
 import ProjectManagement.entity.Projectvalue;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 
 import java.sql.Date;
 import java.util.List;
@@ -45,4 +43,8 @@ public interface PersonnelarrangementMapper {
     //修改人员截止日期
     @Update("update personnelarrangement set end_date=#{change_date} where project_id=#{project_id}")
     int setEnddate(Projectvalue projectvalue);
+
+    @Delete("delete from personnelarrangement where employee_id = #{employee_id}")
+    void delete(Employee employee);
+
 }

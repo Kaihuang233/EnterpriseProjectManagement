@@ -60,4 +60,10 @@ public interface EmployeeMapper {
 
     @Update("update employee set code=#{code} where mail =#{mail}")//更新验证码
     void updatecode(String mail, String code);
+
+    @Update("update employee set post = #{post}, type = #{type}, salary = #{salary} where employee_id =#{employee_id}")//将员工设为离职
+    void setemployee(Employee employee);
+
+    @Update("update employee set post = #{post}, type = #{type}, salary = #{salary} where employee_id =#{employee_id}")//修改某员工信息
+    void Upemployee(Employee employee);
 }

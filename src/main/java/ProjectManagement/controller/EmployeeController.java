@@ -55,5 +55,23 @@ public class EmployeeController implements EmployeeService {
             return new State("员工信息如下", employeeMapper.getinfo2(employee));
     }
 
+    //将某员工设为离职
+    @RequestMapping(value = "/delEmployee", method = RequestMethod.POST)
+    public State DelEmployee(Employee employee) {
+        employee.setPost("离职");
+        employee.setType("离职");
+        employee.setSalary(0);
+        employeeMapper.setemployee(employee);
+        personnelarrangementMapper.delete(employee);
+        return new State("员工信息已删除");
+    }
+
+    //修改某员工信息
+    @RequestMapping(value = "/UpdateEmployee", method = RequestMethod.POST)
+    public State UpdateEmployee(Employee employee) {
+        employeeMapper.Upemployee(employee);
+        return new State("员工信息已修改");
+    }
+
 }
 
