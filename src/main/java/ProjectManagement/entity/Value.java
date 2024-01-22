@@ -10,4 +10,7 @@ public class Value {
 
     @JsonProperty(value = "personvalue")
     double personvalue;
+
+    @JsonProperty(value = "totalvalue")
+    double totalvalue;
 }

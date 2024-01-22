@@ -21,4 +21,16 @@ public class Personnelarrangement {
     @JsonProperty(value = "end_date")
     @JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd")
     private Date end_date;
+
+    public Personnelarrangement(int employee_id, Date start_date){
+        this.employee_id = employee_id;
+        this.start_date = start_date;
+    }
+
+    public Personnelarrangement(int employee_id, Date start_date, Date end_date){
+        this.employee_id = employee_id;
+        this.start_date = start_date;
+        this.end_date = end_date;
+    }
+    Personnelarrangement(){}
 }

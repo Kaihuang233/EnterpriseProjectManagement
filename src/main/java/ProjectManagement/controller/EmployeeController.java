@@ -10,7 +10,9 @@ import ProjectManagement.service.EmployeeService;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 @CrossOrigin(origins = "*")//跨域
 @RestController
@@ -42,6 +44,15 @@ public class EmployeeController implements EmployeeService {
     @RequestMapping(value = "/GetEmpArrange", method = RequestMethod.POST)
     public State getEmpArrange(Personnelarrangement personnelarrangement) {
         return new State("员工id列表如下", personnelarrangementMapper.getperson(personnelarrangement));
+    }
+
+    //根据姓名获取员工信息
+    @RequestMapping(value = "/GetEmpinfo", method = RequestMethod.POST)
+    public State getEmpinfo(Employee employee) {
+        if(Objects.equals(employee.getName(), "") || Objects.equals(employee.getPost(), ""))
+            return new State("员工信息如下", employeeMapper.getinfo1(employee));
+        else
+            return new State("员工信息如下", employeeMapper.getinfo2(employee));
     }
 
 }

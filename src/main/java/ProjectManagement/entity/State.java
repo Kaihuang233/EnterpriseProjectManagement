@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Data
@@ -16,6 +17,8 @@ public class State {
     private String information="";
     @JsonProperty(value = "list")
     private List list;
+    @JsonProperty(value = "map")
+    private Map map;
     public State(String msg){
         this.msg = msg;
     }
@@ -37,5 +40,10 @@ public class State {
     public State(String msg, List list){
         this.msg = msg;
         this.list = list;
+    }
+
+    public State(String msg, Map map){
+        this.msg = msg;
+        this.map = map;
     }
 }

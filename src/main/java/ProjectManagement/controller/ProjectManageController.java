@@ -25,8 +25,12 @@ public class ProjectManageController implements ProjectManagementService {
         if (project.getContract_amount()==null)
             return new State("请保证信息输入完整");
         else {
-            projectMapper.CreateProject(project);
-            return new State(project.getProject_name() + "创建成功", project.getUser_id());
+            try {
+                projectMapper.CreateProject(project);
+                return new State(project.getProject_name() + "创建成功", project.getUser_id());
+            }catch (Exception e){
+                return new State("项目名称重复");
+            }
         }
     }
     //项目信息查询
