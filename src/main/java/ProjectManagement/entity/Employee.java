@@ -1,8 +1,9 @@
 package ProjectManagement.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-
+import ProjectManagement.controller.Transform;
 import java.sql.Date;
 
 @Data
@@ -43,6 +44,10 @@ public class Employee {
     @JsonProperty(value = "city")
     private String city;
 
+    @JsonProperty(value = "entry_date_json")
+    String entry_date_json;
+
     @JsonProperty(value = "entry_date")
-    private Date entry_date;
+    private Date entry_date = Transform.trans(entry_date_json);
+
 }

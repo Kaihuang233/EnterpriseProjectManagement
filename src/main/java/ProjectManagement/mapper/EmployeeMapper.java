@@ -21,7 +21,7 @@ public interface EmployeeMapper {
     @Select("select employee_id from Employee")
     List<Integer> getallId();//获取所有职员id
 
-    @Select("select name, telnum, mail, age, post, type, salary, sex from Employee")
+    @Select("select name, telnum, mail, age, post, type, salary, sex, entry_date from Employee")
     List<Employee> getemplist();//获取职员列表
 
     @Update("update employee set user_id=#{user_id} where telnum =#{mail}")//将职员与用户绑定

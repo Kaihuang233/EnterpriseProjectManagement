@@ -1,5 +1,6 @@
 package ProjectManagement.entity;
 
+import ProjectManagement.controller.Transform;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
@@ -16,8 +17,11 @@ public class Projectvalue {
     @JsonProperty(value = "value_id")
     private Integer value_id;
 
+    @JsonProperty(value = "change_date_json")
+    private String change_date_json;
+
     @JsonProperty(value = "change_date")
-    private Date change_date;
+    private Date change_date = Transform.trans(change_date_json);
 
     @JsonProperty(value = "project_progress")
     private Integer project_progress;

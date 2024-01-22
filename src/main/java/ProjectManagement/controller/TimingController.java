@@ -6,6 +6,8 @@ import ProjectManagement.mapper.PersonnelarrangementMapper;
 import ProjectManagement.mapper.ProjectMapper;
 import ProjectManagement.mapper.TimingMapper;
 import ProjectManagement.service.TimingService;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONArray;
 import jakarta.annotation.Resource;
 import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -35,28 +37,18 @@ public class TimingController implements TimingService {
 
     //返回从当前日期有安排的员工号及其项目日期安排
     @RequestMapping(value = "/gettiming",method = RequestMethod.POST)
-    public State getTime() {
-        return new State("当前日期有安排的员工号及其项目日期安排如下", timingMapper.GetTiming(new Date(System.currentTimeMillis())));
+    public NewState getTime() {
+        try {
+            return new NewState("200", "当前日期有安排的员工号及其项目日期安排如下", JSONArray.parseArray(JSON.toJSONString(timingMapper.GetTiming(new Date(System.currentTimeMillis())))));
+        }catch (Exception e){
+            return new NewState("400", "出现未知错误");
+        }
     }
 
-//    //获取时序图
-//    @RequestMapping(value = "/getmap",method = RequestMethod.GET)
-//    public State getmap() {
-//        Calendar cal = Calendar.getInstance();
-//        Date d = new java.sql.Date(cal.getTime().getTime());
-//        List<MyMap> map = new ArrayList<>();
-//        List<Personnelarrangement> p = timingMapper.Getproject(d);
-//        for(Personnelarrangement t : p){
-//            for(Personnelarrangement q : personnelarrangementMapper.getemployee(t.getProject_id())){
-//                map.add(new MyMap(employeeMapper.get_nameByemp_id(q.getEmployee_id()), projectMapper.GetProjectname(t.getProject_id()), q.getStart_date(), q.getEnd_date()));
-//            }
-//        }
-//        return new State("人员名称及项目安排如下", map);
-//    }
 
     //获取时序图
     @RequestMapping(value = "/getmap",method = RequestMethod.POST)
-    public State getmap() {
+    public NewState getmap() {
         List<StaffSchedule> staffSchedules = new LinkedList<>();
         StaffSchedule tempSchedule;
         List<StaffProject> staffProject;
@@ -129,7 +121,7 @@ public class TimingController implements TimingService {
             staffSchedules.add(tempSchedule);
         }
         System.out.println(staffSchedules);
-        return new State("时序图如下", staffSchedules);
+        return new NewState("200", "时序图如下", JSONArray.parseArray(JSON.toJSONString(staffSchedules)));
     }
     //获取从今往后的六个月及其对应的天数
     public Map<String, Integer> getdates(){

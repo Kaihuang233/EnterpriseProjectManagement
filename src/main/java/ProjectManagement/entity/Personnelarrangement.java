@@ -1,5 +1,6 @@
 package ProjectManagement.entity;
 
+import ProjectManagement.controller.Transform;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
@@ -14,13 +15,17 @@ public class Personnelarrangement {
     @JsonProperty(value = "project_id")
     private int project_id;
 
+    @JsonProperty(value = "start_date_json")
+    private String start_date_json;
+
     @JsonProperty(value = "start_date")
-    @JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd")
-    private Date start_date;
+    private Date start_date = Transform.trans(start_date_json);
+
+    @JsonProperty(value = "end_date_json")
+    private String end_date_json;
 
     @JsonProperty(value = "end_date")
-    @JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd")
-    private Date end_date;
+    private Date end_date = Transform.trans(end_date_json);
 
     public Personnelarrangement(int employee_id, Date start_date){
         this.employee_id = employee_id;

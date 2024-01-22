@@ -1,5 +1,7 @@
 package ProjectManagement.entity;
 
+import ProjectManagement.controller.Transform;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import java.sql.Date;
@@ -13,10 +15,14 @@ public class MyMap{
     private String project_name;
 
     @JsonProperty(value = "start_date")
-    private Date start_date;
+    private String start_date_json;
 
+    private Date start_date = Transform.trans(start_date_json);
+
+    @JsonProperty(value = "end_date_json")
+    private String end_date_json;
     @JsonProperty(value = "end_date")
-    private Date end_date;
+    private Date end_date = Transform.trans(end_date_json);
 
     public MyMap(String name, String project_name, Date startDate, Date endDate) {
         this.name = name;
