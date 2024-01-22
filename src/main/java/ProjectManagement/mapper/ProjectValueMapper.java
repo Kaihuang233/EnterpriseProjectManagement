@@ -23,10 +23,15 @@ public interface ProjectValueMapper {
     @Select("select project_progress from projectvalue where change_date <= #{change_date} && project_id = #{project_id}")
     int[] lastdaybefore(Projectvalue projectvalue);//获取某年最后一天及之前的项目进度
 
+    @Select("select project_id from project where start_date >= #{date1} && start_date <= #{date2}")
+    int[] RecentProject(Date date1, Date date2);//获取最近三个月内立项的项目
+
     @Select("select DISTINCT project_id from projectvalue ")
     int[] getid();//获取所有项目id
 
     @Insert("insert into projectvalue(project_id, user_id, change_date, project_progress) " +
             "values(#{project_id}, #{user_id}, #{change_date}, #{project_progress})")
     int CreateProgress(Projectvalue projectvalue);//新建项目进度
+
+
 }

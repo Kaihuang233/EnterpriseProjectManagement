@@ -12,8 +12,11 @@ public interface UsersMapper {
     @Select("select password from user where user_name=#{user_name}")
     public String check(String user_name);
 
+    @Select("select user_id from user where user_name=#{user_name}")
+    Integer getuser_id(String user_name);//通过姓名获取id
+
     @Select("select user_id from user where telnum=#{telnum}")
-    public int getuser_id(String Telnum);
+    Integer getuser_idByphone(String telnum);//通过电话获取id
 
     @Select("select telnum from user where telnum=#{Telnum}")//检查手机号是否注册过
     public String checktelnum(String Telnum);

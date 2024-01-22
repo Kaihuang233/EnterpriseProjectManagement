@@ -1,6 +1,7 @@
 package ProjectManagement.controller;
 
 import ProjectManagement.entity.Personnelarrangement;
+import ProjectManagement.entity.RecentProject;
 import ProjectManagement.entity.State;
 import ProjectManagement.mapper.EmployeeMapper;
 import ProjectManagement.mapper.PersonnelarrangementMapper;
@@ -82,6 +83,8 @@ public class ProjectValueController implements ProjectValueService {
     }
 
 
+
+
     //提交项目进度
     @RequestMapping(value = "/Newprogress", method = RequestMethod.POST)
     public State newprogress(Projectvalue projectvalue) {
@@ -150,8 +153,6 @@ public class ProjectValueController implements ProjectValueService {
         }
         Map<String,Integer> cp1 = new TreeMap<>();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
-        System.out.println(dates);
-        System.out.println(progress);
         //计算该项目各月的支撑产值
         if(!sdf.format(dates.get(0)).equals(sdf.format(dates.get(1)))){//如果项目首月进度为0
             cp1.put(sdf.format(dates.get(0)), 0);
@@ -201,7 +202,7 @@ public class ProjectValueController implements ProjectValueService {
             }
         }
 
-        return new State("该年的项目支撑产值为："+money, map);
+        return new State("该年的项目支撑产值为：", money,  map);
     }
     //获取某年人员支撑产值
     @RequestMapping(value = "/getannualPersonValue", method = RequestMethod.POST)
@@ -227,7 +228,7 @@ public class ProjectValueController implements ProjectValueService {
             }
 
         }
-        return new State("该年的人员支撑产值为："+money, map);
+        return new State("该年的人员支撑产值为：", money, map);
     }
 
     //获取某年总产值
@@ -237,9 +238,43 @@ public class ProjectValueController implements ProjectValueService {
         List l2 = getannualProjectValue(personnelarrangement).getList();
         List<Integer> l = new LinkedList<>();
         l.add((int) l1.get(0) + (int) l2.get(0));
-
         return new State("该年总产值为：", l);
     }
+
+    //获取最近三个月内立项的项目及其信息
+    @RequestMapping(value = "/getRecentpro", method = RequestMethod.POST)
+    public State getRecentpro(){
+        List<RecentProject> l = new LinkedList<>();
+        RecentProject r;
+
+        Calendar data1 = Calendar.getInstance();
+        Calendar data2 = Calendar.getInstance();
+        data1.add(Calendar.MONTH, -3);
+
+        //存储最近三个月内立项的项目id
+        int []a = projectValueMapper.RecentProject(new Date(data1.getTime().getTime()), new Date(data2.getTime().getTime()));
+        Personnelarrangement personnelarrangement;
+        for(int i : a){//遍历所有项目
+            r = new RecentProject();
+            personnelarrangement = new Personnelarrangement();//设置立项日期和今日日期
+            personnelarrangement.setStart_date(projectMapper.GetProjectSdate(i));
+            personnelarrangement.setEnd_date(new Date(data2.getTime().getTime()));
+
+            r.setProject_name(projectMapper.GetProjectname(i));//设置项目名称
+            r.setStart_date(projectMapper.GetProjectSdate(i));//设置立项日期
+            r.setContract_amount(projectMapper.GetProjectAmount(i));//设置合同额
+            r.setProject_amount(getannualProjectValue(personnelarrangement).getValue());//获取到目前的项目支撑产值
+            r.setPerson_amount(getannualPersonValue(personnelarrangement).getValue());//获取到目前的人员支撑产值
+            r.setTotal_amount(r.getProject_amount()+r.getPerson_amount());//设置当前的总产值
+            System.out.println(r);
+            l.add(r);
+        }
+        return new State("最近三个月内立项的项目及信息如下：", l);
+    }
+
+
+
+
     //判断是否是同一个月
     public boolean isMonth(Date date1, Date date2) {//
         Calendar calendar1 = Calendar.getInstance();
@@ -269,21 +304,4 @@ public class ProjectValueController implements ProjectValueService {
         return a;
     }
 
-//    //获取项目进度最后一个月的最早进度
-//    public Date getEarlistProgress(Date date, int project_id){
-//        Calendar cal = Calendar.getInstance();
-//        Projectvalue projectvalue = new Projectvalue();
-//        cal.setTime(date);
-//        cal.set(Calendar.DAY_OF_MONTH, 1);
-//        java.sql.Date sqldate = new java.sql.Date(cal.getTime().getTime());
-//        projectvalue.setChange_date(sqldate);
-//        projectvalue.setProject_id(project_id);
-//        List<java.sql.Date> d = projectValueMapper.afterdate(projectvalue);
-//        java.sql.Date temp = d.get(0);
-//        for(java.sql.Date i : d){
-//            if(i.before(temp))
-//                temp = i;
-//        }
-//        return temp;
-//    }
 }

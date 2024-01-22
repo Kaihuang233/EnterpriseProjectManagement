@@ -32,7 +32,7 @@ public class UserController implements UserService {
         } else if(!Objects.equals(usermapper.check(user.getUser_name()), user.getPassword())){//密码空
             return new State("用户名或密码错误,请重新输入");
         }else{
-            return new State("登录成功！", usermapper.getuser_id(user.getTelnum()), employeeMapper.get_type(usermapper.getuser_id(user.getTelnum())));
+            return new State("登录成功！", usermapper.getuser_id(user.getUser_name()), employeeMapper.get_type(usermapper.getuser_id(user.getUser_name())));
         }
     }
 
@@ -53,8 +53,8 @@ public class UserController implements UserService {
             return new State("验证码错误，请重新输入");
         }else{
             usermapper.reg(user);
-            employeeMapper.Set_user(user.getTelnum(), usermapper.getuser_id(user.getTelnum()));
-            return new State("注册成功！", usermapper.getuser_id(user.getTelnum()), employeeMapper.get_type(user.getUser_id()));
+            employeeMapper.Set_user(user.getTelnum(), usermapper.getuser_idByphone(user.getTelnum()));
+            return new State("注册成功！", usermapper.getuser_idByphone(user.getTelnum()), employeeMapper.get_type(usermapper.getuser_idByphone(user.getTelnum())));
         }
     }
 

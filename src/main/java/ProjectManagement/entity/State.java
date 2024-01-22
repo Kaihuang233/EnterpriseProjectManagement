@@ -15,6 +15,10 @@ public class State {
     private int user_id=-1;
     @JsonProperty(value = "information")
     private String information="";
+
+    @JsonProperty(value = "value")
+    private Integer value;
+
     @JsonProperty(value = "list")
     private List list;
     @JsonProperty(value = "map")
@@ -44,6 +48,12 @@ public class State {
 
     public State(String msg, Map map){
         this.msg = msg;
+        this.map = map;
+    }
+
+    public State(String msg, Integer value, Map map){
+        this.msg = msg;
+        this.value = value;
         this.map = map;
     }
 }

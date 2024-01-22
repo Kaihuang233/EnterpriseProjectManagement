@@ -32,5 +32,5 @@ public class Personnelarrangement {
         this.start_date = start_date;
         this.end_date = end_date;
     }
-    Personnelarrangement(){}
+    public Personnelarrangement(){}
 }
