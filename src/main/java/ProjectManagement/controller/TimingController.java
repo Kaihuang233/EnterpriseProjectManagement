@@ -74,7 +74,6 @@ public class TimingController implements TimingService {
             perarrange = personnelarrangementMapper.TheDates(new Personnelarrangement(entry1.getKey(), new java.sql.Date(c.getTime().getTime())));//获取某员工从该日期往后的项目安排
             tempSchedule = new StaffSchedule();
             tempSchedule.setStaffName(entry1.getValue());
-            System.out.println(entry1.getValue());
             staffProject = new LinkedList<>();
             for(Map.Entry<String, Integer> entry2 : dates.entrySet()){//遍历从今往后三个月
                 tempProject = new StaffProject();

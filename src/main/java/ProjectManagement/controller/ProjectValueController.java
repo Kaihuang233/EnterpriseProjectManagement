@@ -88,10 +88,27 @@ public class ProjectValueController implements ProjectValueService {
     @RequestMapping(value = "/Newprogress", method = RequestMethod.POST)
     public NewState newprogress(@RequestBody(required = false) Projectvalue projectvalue) {
         map = new TreeMap<>();
-        p = new ProjectValueTool();
 
         try {
-            return p.newprogress(projectvalue);
+            if (projectValueMapper.existProjectvalue(projectvalue).isEmpty()) {//第一次提交项目进度时会额外提交一个进度为0提交时间为项目起始日期的项目进度
+                Projectvalue p = new Projectvalue();
+                p.setProject_id(projectvalue.getProject_id());
+                p.setUser_id(projectvalue.getUser_id());
+                p.setChange_date(projectMapper.GetProjectSdate(projectvalue.getProject_id()));
+                p.setProject_progress(0);
+                projectValueMapper.CreateProgress(p);
+            }
+
+            Date currentDate = new Date(System.currentTimeMillis());  //获取当前时间
+            projectvalue.setChange_date(currentDate);
+            projectValueMapper.CreateProgress(projectvalue);
+
+            if (projectvalue.getProject_progress() == 100) {
+                personnelarrangementMapper.setEnddate(projectvalue);
+            }
+
+            map.put("user_id", projectvalue.getUser_id());
+            return new NewState("200", "项目进度更新成功", map);
         }catch (Exception e){
             return new NewState("400", "项目进度更新失败");
         }
