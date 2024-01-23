@@ -38,7 +38,6 @@ public interface UsersMapper {
 
     @Update("update user set telnum=#{telnum}, password = #{password} where user_id =#{user_id} ")//修改用户重要信息
     void updateimportant(User user);
-    @Update("update user set code=#{code} where mail =#{mail} ")
-    void updatecode(String mail,String code);
+
 
 }

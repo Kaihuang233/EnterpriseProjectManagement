@@ -18,8 +18,6 @@ public class NewState {
     @JsonProperty(value = "data")
     private Object data;
 
-    @JsonProperty(value = "value")
-    private Integer value;
 
     public NewState(String code){
         this.code = code;
@@ -35,12 +33,6 @@ public class NewState {
         this.data = data;
     }
 
-    public NewState(String code, String msg, Object data, Integer value){
-        this.code = code;
-        this.msg = msg;
-        this.data = data;
-        this.value = value;
-    }
 
     public void test(){
         Map<String, Object> map = new HashMap<>();

@@ -216,10 +216,12 @@ public class ProjectValueController implements ProjectValueService {
     }
     @RequestMapping(value = "/getannualProjectValue", method = RequestMethod.POST)
     public NewState getannualProjectValue(@RequestBody(required = false) Personnelarrangement personnelarrangement) {
-        Map<String, Map<String, Integer>> map = new TreeMap<>();
-
-        map.put("projectvalue", getannualProjectValue1(personnelarrangement).getMap());
-        return new NewState("200", "该年的项目支撑产值为：", map, getannualProjectValue1(personnelarrangement).getValue());
+        map = new TreeMap<>();
+        Map temp1 = getannualProjectValue1(personnelarrangement).getMap();
+        Integer temp2 = getannualProjectValue1(personnelarrangement).getValue();
+        map.put("projectvalue", temp1);
+        map.put("value", temp2);
+        return new NewState("200", "该年的项目支撑产值为：", map);
     }
 
 
@@ -251,16 +253,18 @@ public class ProjectValueController implements ProjectValueService {
     }
     @RequestMapping(value = "/getannualPersonValue", method = RequestMethod.POST)
     public NewState getannualPersonValue(@RequestBody(required = false) Personnelarrangement personnelarrangement){
-        Map<String, Map<String, Integer>> map = new TreeMap<>();
+        map = new TreeMap<>();
 
         map.put("personvalue", getannualPersonValue1(personnelarrangement).getMap());
-        return new NewState("200", "该年的人员支撑产值为：", map, getannualPersonValue1(personnelarrangement).getValue());
+        map.put("value", getannualPersonValue1(personnelarrangement).getValue());
+        return new NewState("200", "该年的人员支撑产值为：", map);
     }
 
 
     //获取某年总产值
     @RequestMapping(value = "/getannualValue", method = RequestMethod.POST)
     public NewState getannualValue(@RequestBody(required = false) Personnelarrangement personnelarrangement){
+        map = new TreeMap<>();
 
         Map<String, Integer> m1 = getannualPersonValue1(personnelarrangement).getMap();
         Map<String, Integer> m2 = getannualProjectValue1(personnelarrangement).getMap();
@@ -272,8 +276,10 @@ public class ProjectValueController implements ProjectValueService {
             } catch (Exception ignored){
             }
         }
+        map.put("projectvalue", m2);
+        map.put("value", money);
 
-        return new NewState("200", "该年总产值为：", m2, money);
+        return new NewState("200", "该年总产值为：", map);
     }
 
     //获取最近三个月内立项的项目及其信息
