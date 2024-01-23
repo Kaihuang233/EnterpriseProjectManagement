@@ -264,16 +264,16 @@ public class ProjectValueController implements ProjectValueService {
 
         Map<String, Integer> m1 = getannualPersonValue1(personnelarrangement).getMap();
         Map<String, Integer> m2 = getannualProjectValue1(personnelarrangement).getMap();
-        System.out.println(m1);
-        System.out.println(m2);
+        int money = 0;
         for (Map.Entry<String, Integer> entry : m1.entrySet()) {
             try {
                 m2.replace(entry.getKey(), m2.get(entry.getKey()) + entry.getValue());
+                money += m2.get(entry.getKey()) + entry.getValue();
             } catch (Exception ignored){
             }
         }
 
-        return new NewState("200", "该年总产值为：", m2);
+        return new NewState("200", "该年总产值为：", m2, money);
     }
 
     //获取最近三个月内立项的项目及其信息
