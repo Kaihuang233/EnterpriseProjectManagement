@@ -59,16 +59,14 @@ public class TimingController implements TimingService {
 
         Map<String, Integer> dates = getdates();//用于储存从今往后的三个月及其对应的天数
 
-        Map<Integer, String> employee = new TreeMap<>();//用于存储公司所有的职员id及其姓名
+        Map<Integer, String> employee = new HashMap<>();//用于存储公司所有的职员id及其姓名
         List<Employee> e = employeeMapper.getemplist();
         for(Employee em : e){
             employee.put(em.getEmployee_id(), em.getName());
         }
-
         List<Personnelarrangement> perarrange;
 
         Calendar c = Calendar.getInstance();
-
         SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM");
 
         System.out.println("从今往后的三个月为："+dates);
@@ -109,18 +107,14 @@ public class TimingController implements TimingService {
                             tempProjectList.DayList(getdays(new Date(cal.getInstance().getTime().getTime()), p.getEnd_date()));
                         }
                     }
-
                     projectList.add(tempProjectList);
-
                 }
-
                 tempProject.setProjectList(projectList);
                 staffProject.add(tempProject);
             }
             tempSchedule.setStaffProject(staffProject);
             staffSchedules.add(tempSchedule);
         }
-        System.out.println(staffSchedules);
         return new NewState("200", "时序图如下", JSONArray.parseArray(JSON.toJSONString(staffSchedules)));
     }
     //获取从今往后的六个月及其对应的天数
