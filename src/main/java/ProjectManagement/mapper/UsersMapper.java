@@ -19,7 +19,13 @@ public interface UsersMapper {
     Integer getuser_idByphone(String telnum);//通过电话获取id
 
     @Select("select telnum from user where telnum=#{Telnum}")//检查手机号是否注册过
-    public String checktelnum(String Telnum);
+     String checktelnum(String Telnum);
+
+    @Select("select user_id from employee where mail=#{mail}")//检查邮箱是否注册过
+     String checkmail(String mail);
+
+    @Select("select user_name from user where user_name=#{user_name}")//检查用户名是否注册过
+     String checkname(String user_name);
 //
 //    @Select("select Type from 用户 where Telnum=#{Telnum}")
 //    public String getType(String Telnum);
