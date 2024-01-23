@@ -4,6 +4,7 @@ import ProjectManagement.entity.Employee;
 import ProjectManagement.entity.NewState;
 import ProjectManagement.entity.State;
 import ProjectManagement.entity.User;
+import ProjectManagement.mapper.EmailverificationMapper;
 import ProjectManagement.mapper.EmployeeMapper;
 import ProjectManagement.mapper.UsersMapper;
 import ProjectManagement.service.UserService;
@@ -54,11 +55,17 @@ public class UserController implements UserService {
             return new NewState("401", "请输入电话和密码");
         } else if (user.getTelnum() == null) {//电话空
             return new NewState("401", "请输入电话");
+        }else if (user.getTelnum().length() != 11) {//电话位数不正确
+            return new NewState("401", "电话号码位数不正确");
         } else if(user.getPassword() == null){//密码空
             return new NewState("401","请输入密码");
         }else if(usermapper.checktelnum(user.getTelnum())!=null){//检查手机号有没有注册过
             return new NewState("409", "注册失败，注册使用的手机号已存在");
-        }else if(!Objects.equals(employeeMapper.checkcode(user.getMail()), user.getCode())){
+        }else if(usermapper.checkmail(user.getMail())!=null){
+            return new NewState("409", "注册失败，注册使用的邮箱已存在");
+        }else if(usermapper.checkname(user.getUser_name())!=null){
+            return new NewState("409", "注册失败，注册使用的用户名已存在");
+        }else if(!Objects.equals(employeeMapper.checkcode(user.getMail()), user.getCode())|| Objects.equals(user.getCode(), "")){
             return new NewState("401","验证码错误，请重新输入");
         }else{
             usermapper.reg(user);
@@ -66,6 +73,7 @@ public class UserController implements UserService {
 
             map.put("type", employeeMapper.get_type(usermapper.getuser_idByphone(user.getTelnum())));
             map.put("user_id", usermapper.getuser_idByphone(user.getTelnum()));
+            employeeMapper.updatecode(user.getMail(), "");//将验证码设为空
             return new NewState("401", "注册成功！", map);
         }}catch (Exception e){
             return new NewState("400", e.toString());

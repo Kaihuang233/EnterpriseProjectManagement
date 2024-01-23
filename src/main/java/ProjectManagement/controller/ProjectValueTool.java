@@ -5,8 +5,6 @@ import ProjectManagement.mapper.EmployeeMapper;
 import ProjectManagement.mapper.PersonnelarrangementMapper;
 import ProjectManagement.mapper.ProjectMapper;
 import ProjectManagement.mapper.ProjectValueMapper;
-import ProjectManagement.service.ProjectValueService;
-import ProjectManagement.controller.ProjectValueTool;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,12 +12,10 @@ import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static java.lang.Math.*;
-
 
 @CrossOrigin(origins = "*")//跨域
 @RestController
-public class ProjectValueController implements ProjectValueService {
+public class ProjectValueTool {
 
     @Resource
     private ProjectValueMapper projectValueMapper;//实例化对象并注入
@@ -31,8 +27,6 @@ public class ProjectValueController implements ProjectValueService {
     private PersonnelarrangementMapper personnelarrangementMapper;//实例化对象并注入
     @Resource
     private PersonnelArrangeController personnelArrangeController;
-
-    private ProjectValueTool p;
 
     private Map<String, Object> map;
 
@@ -85,20 +79,37 @@ public class ProjectValueController implements ProjectValueService {
 
 
     //提交项目进度
-    @RequestMapping(value = "/Newprogress", method = RequestMethod.POST)
-    public NewState newprogress(@RequestBody(required = false) Projectvalue projectvalue) {
+    public NewState newprogress(Projectvalue projectvalue) {
         map = new TreeMap<>();
-        p = new ProjectValueTool();
 
         try {
-            return p.newprogress(projectvalue);
+            if (projectValueMapper.existProjectvalue(projectvalue) == null) {//第一次提交项目进度时会额外提交一个进度为0提交时间为项目起始日期的项目进度
+                System.out.println(projectValueMapper.GetProjectvalue(projectvalue));
+                Projectvalue p = new Projectvalue();
+                p.setProject_id(projectvalue.getProject_id());
+                p.setUser_id(projectvalue.getUser_id());
+                p.setChange_date(projectMapper.GetProjectSdate(projectvalue.getProject_id()));
+                p.setProject_progress(0);
+                projectValueMapper.CreateProgress(p);
+            }
+
+            Date currentDate = new Date(System.currentTimeMillis());  //获取当前时间
+            projectvalue.setChange_date(currentDate);
+            projectValueMapper.CreateProgress(projectvalue);
+
+            if (projectvalue.getProject_progress() == 100) {
+                personnelarrangementMapper.setEnddate(projectvalue);
+            }
+
+            map.put("user_id", projectvalue.getUser_id());
+            return new NewState("200", "项目进度更新成功", map);
         }catch (Exception e){
             return new NewState("400", "项目进度更新失败");
         }
     }
 
     //获取该项目各月的人员产值
-    public Map<String,Integer> getpersonValue1(Projectvalue projectvalue) {
+    public Map<String,Integer> getpersonValue(Projectvalue projectvalue) {
         List<Integer> employee = personnelarrangementMapper.getpersonarrange(projectvalue.getProject_id());
         List<Map<String,Integer>> cp2 = new LinkedList<>();
         Map<String,Integer> cp22 = getallmonth(projectMapper.GetProjectSdate(projectvalue.getProject_id()), projectMapper.GetProjectEdate(projectvalue.getProject_id()));
@@ -114,17 +125,9 @@ public class ProjectValueController implements ProjectValueService {
         }
         return cp22;
     }
-    @RequestMapping(value = "/getpersonvalue", method = RequestMethod.POST)
-    public NewState getpersonValue(@RequestBody(required = false) Projectvalue projectvalue) {
-        map = new TreeMap<>();
-
-        map.put("personvalue", getpersonValue1(projectvalue));
-        return new NewState("200", "该项目各月的人员产值如下", map);
-    }
-
 
     //获取该项目各月的项目支撑产值
-    public Map<String,Integer> getprojectValue1(Projectvalue projectvalue) {
+    public Map<String,Integer> getprojectValue(Projectvalue projectvalue) {
         map = new TreeMap<>();
 
         List<Projectvalue> list = projectValueMapper.GetProjectvalue(projectvalue);
@@ -163,20 +166,17 @@ public class ProjectValueController implements ProjectValueService {
                 break;
             cp1.put(sdf.format(dates.get(i+1)), ComputeProject(projectMapper.GetProjectAmount(projectvalue.getProject_id()), progress.get(i), progress.get(i+1)));
         }
+
         return cp1;
-    }
-    @RequestMapping(value = "/getprojectvalue", method = RequestMethod.POST)
-    public NewState getprojectValue(@RequestBody(required = false) Projectvalue projectvalue) {
-        return new NewState("200", "该项目各月的项目支撑产值如下", getprojectValue1(projectvalue));
     }
 
     //计算某项目的各月产值
-    public Map<String,Integer> getValue1(@RequestBody(required = false) Projectvalue projectvalue) {
+    public Map<String,Integer> getValue(@RequestBody(required = false) Projectvalue projectvalue) {
         List<Map<String,Integer>> cp = new LinkedList<>();
         Map<String,Integer> cp22 = getallmonth(projectMapper.GetProjectSdate(projectvalue.getProject_id()), projectMapper.GetProjectEdate(projectvalue.getProject_id()));
 
-        cp.add(getpersonValue1(projectvalue));
-        cp.add(getprojectValue1(projectvalue));
+        cp.add(getpersonValue(projectvalue));
+        cp.add(getprojectValue(projectvalue));
         for(Map<String,Integer> map : cp){
             for(Map.Entry<String,Integer> entry:map.entrySet()){
                 cp22.replace(entry.getKey(), cp22.get(entry.getKey()) + entry.getValue());
@@ -184,16 +184,9 @@ public class ProjectValueController implements ProjectValueService {
         }
         return cp22;
     }
-    @RequestMapping(value = "/getvalue", method = RequestMethod.POST)
-    public NewState getValue(@RequestBody(required = false) Projectvalue projectvalue) {
-        Map<String, Map<String, Integer>> map = new TreeMap<>();
-        map.put("value", getValue1(projectvalue));
-        return new NewState("200", "该项目各月的产值如下", map);
-    }
-
 
     //获取某年项目支撑产值
-    public State getannualProjectValue1(@RequestBody(required = false) Personnelarrangement personnelarrangement) {
+    public State getannualProjectValue(@RequestBody(required = false) Personnelarrangement personnelarrangement) {
 
         Map<String,Integer> map1 = getallmonth(personnelarrangement.getStart_date(), personnelarrangement.getEnd_date());//获取该年所有月，并将薪资设为0
         Projectvalue projectvalue = new Projectvalue();
@@ -202,7 +195,7 @@ public class ProjectValueController implements ProjectValueService {
         Map<String,Integer> cp = new TreeMap<>();
         for (int i : id) {//遍历所有项目
             projectvalue.setProject_id(i);
-            cp = getprojectValue1(projectvalue);
+            cp = getprojectValue(projectvalue);
             for (Map.Entry<String, Integer> entry : cp.entrySet()) {
                 try {
                     map1.replace(entry.getKey(), map1.get(entry.getKey()) + entry.getValue());
@@ -214,19 +207,9 @@ public class ProjectValueController implements ProjectValueService {
 
         return new State("该年的项目支撑产值为：", money, map1);
     }
-    @RequestMapping(value = "/getannualProjectValue", method = RequestMethod.POST)
-    public NewState getannualProjectValue(@RequestBody(required = false) Personnelarrangement personnelarrangement) {
-        map = new TreeMap<>();
-        Map temp1 = getannualProjectValue1(personnelarrangement).getMap();
-        Integer temp2 = getannualProjectValue1(personnelarrangement).getValue();
-        map.put("projectvalue", temp1);
-        map.put("value", temp2);
-        return new NewState("200", "该年的项目支撑产值为：", map);
-    }
-
 
     //获取某年人员支撑产值
-    public State getannualPersonValue1(@RequestBody(required = false) Personnelarrangement personnelarrangement){
+    public State getannualPersonValue(@RequestBody(required = false) Personnelarrangement personnelarrangement){
 
         List<Personnelarrangement> l1 = personnelArrangeController.Theyear(personnelarrangement);
         List<Personnelarrangement> l2 = personnelArrangeController.TheWholeyear(personnelarrangement);
@@ -249,41 +232,20 @@ public class ProjectValueController implements ProjectValueService {
             }
 
         }
-        return new State("该年的人员支撑产值为：", money, map1);
+        return new State("该年的人员支撑产值为：", money, map);
     }
-    @RequestMapping(value = "/getannualPersonValue", method = RequestMethod.POST)
-    public NewState getannualPersonValue(@RequestBody(required = false) Personnelarrangement personnelarrangement){
-        map = new TreeMap<>();
-
-        map.put("personvalue", getannualPersonValue1(personnelarrangement).getMap());
-        map.put("value", getannualPersonValue1(personnelarrangement).getValue());
-        return new NewState("200", "该年的人员支撑产值为：", map);
-    }
-
 
     //获取某年总产值
-    @RequestMapping(value = "/getannualValue", method = RequestMethod.POST)
     public NewState getannualValue(@RequestBody(required = false) Personnelarrangement personnelarrangement){
-        map = new TreeMap<>();
-
-        Map<String, Integer> m1 = getannualPersonValue1(personnelarrangement).getMap();
-        Map<String, Integer> m2 = getannualProjectValue1(personnelarrangement).getMap();
-        int money = 0;
-        for (Map.Entry<String, Integer> entry : m1.entrySet()) {
-            try {
-                m2.replace(entry.getKey(), m2.get(entry.getKey()) + entry.getValue());
-                money += m2.get(entry.getKey()) + entry.getValue();
-            } catch (Exception ignored){
-            }
-        }
-        map.put("projectvalue", m2);
-        map.put("value", money);
-
-        return new NewState("200", "该年总产值为：", map);
+        List l1 = getannualPersonValue(personnelarrangement).getList();
+        List l2 = getannualProjectValue(personnelarrangement).getList();
+        List<Integer> l = new LinkedList<>();
+        l.add((int) l1.get(0) + (int) l2.get(0));
+        return new NewState("200", "该年总产值为：");
     }
 
     //获取最近三个月内立项的项目及其信息
-    public List<RecentProject> getRecentpro1(){
+    public List<RecentProject> getRecentpro(){
         List<RecentProject> l = new LinkedList<>();
         RecentProject r;
 
@@ -303,20 +265,14 @@ public class ProjectValueController implements ProjectValueService {
             r.setProject_name(projectMapper.GetProjectname(i));//设置项目名称
             r.setStart_date(projectMapper.GetProjectSdate(i));//设置立项日期
             r.setContract_amount(projectMapper.GetProjectAmount(i));//设置合同额
-            r.setProject_amount(getannualProjectValue1(personnelarrangement).getValue());//获取到目前的项目支撑产值
-            r.setPerson_amount(getannualPersonValue1(personnelarrangement).getValue());//获取到目前的人员支撑产值
+            r.setProject_amount(getannualProjectValue(personnelarrangement).getValue());//获取到目前的项目支撑产值
+            r.setPerson_amount(getannualPersonValue(personnelarrangement).getValue());//获取到目前的人员支撑产值
             r.setTotal_amount(r.getProject_amount()+r.getPerson_amount());//设置当前的总产值
             System.out.println(r);
             l.add(r);
         }
 
         return  l;
-    }
-    @RequestMapping(value = "/getRecentpro", method = RequestMethod.POST)
-    public NewState getRecentpro(){
-        map = new TreeMap<>();
-
-        return new NewState("200", "最近三个月内立项的项目及信息如下：", getRecentpro1());
     }
 
 
@@ -351,13 +307,4 @@ public class ProjectValueController implements ProjectValueService {
         return a;
     }
 
-
-    @RequestMapping(value = "/test", method = RequestMethod.GET)
-    public NewState test(Projectvalue projectvalue) {
-        Map<String, Integer> m = new TreeMap<>();
-        m = Transform.copyToStringValueMap(Transform.getObjectToMap(getpersonValue(projectvalue).getData()));
-        System.out.println(m);
-
-        return new NewState("200", "该项目各月的产值如下", m);
-    }
 }
