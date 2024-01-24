@@ -37,7 +37,7 @@ public class EmployeeController implements EmployeeService {
     }
 
     //获取职员列表
-    @RequestMapping(value = "/GetEmployeeList", method = RequestMethod.GET)
+    @RequestMapping(value = "/GetEmployeeList", method = RequestMethod.POST)
     public NewState getemployee() {
         map = new TreeMap<>();
 
