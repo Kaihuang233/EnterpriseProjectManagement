@@ -9,15 +9,12 @@ import org.springframework.web.bind.annotation.*;
 import org.thymeleaf.TemplateEngine;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Objects;
-import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 import ProjectManagement.mapper.UsersMapper;
 
 @RestController
-public class SendMailController {
+public class SendMailController extends Thread{
     @Autowired
     private SendMail sendMailService;
 
@@ -27,8 +24,8 @@ public class SendMailController {
     private UsersMapper usersMapper;
     @Resource
     private EmployeeMapper employeeMapper;
-    @Resource
-    EmailverificationMapper emailverificationMapper;
+
+    private Map<String, Object> map;
 
     @RequestMapping(value = "/sendmail",method = RequestMethod.POST)
     public NewState sendOne(@RequestBody(required = false) User user) {
@@ -43,7 +40,7 @@ public class SendMailController {
             return new NewState("200", "发送成功");
         }
     }
-
+    //验证验证码
     @RequestMapping(value = "/vertifymail",method = RequestMethod.POST)
     public NewState vertifymail(@RequestBody(required = false)Employee employee) {
         if(Objects.equals(employeeMapper.checkcode(employee.getMail()), employee.getCode())){
@@ -54,6 +51,29 @@ public class SendMailController {
         }
         return new NewState("401", "验证失败");
 
+    }
+    @Override
+    public void run() {
+
+    }
+    //找回密码
+    @RequestMapping(value = "/findpassword", method = RequestMethod.POST)
+    public NewState findpassword(@RequestBody(required = false)User user) {
+        map = new HashMap<>();
+        try {
+            SendMailController t1 = new SendMailController();
+            t1.start();
+            if(Objects.equals(usersMapper.findmail(usersMapper.getuser_id(user.getUser_name())), user.getMail())) {//邮箱对应该用户
+                String code = verificationCode();
+                sendMailService.sendTxtMail1(user.getMail(),"您好，您的验证码为：",code+" \n验证码在五分钟内有效，请尽快进行验证");//发送验证码
+                employeeMapper.updatecode(user.getMail(),code);//更新验证码
+                return new NewState("200", "验证码发送成功");
+            }else{
+                return new NewState("401", "关联邮箱错误");
+            }
+        }catch (Exception e){
+            return new NewState("400", "出现未知原因错误");
+        }
     }
 
     public static String verificationCode() {

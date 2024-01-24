@@ -59,6 +59,10 @@ public class UserController implements UserService {
             return new NewState("401", "电话号码位数不正确");
         } else if(user.getPassword() == null){//密码空
             return new NewState("401","请输入密码");
+        }else if(user.getUser_name().length() < 3 || user.getUser_name().length() > 20){//用户名位数
+            return new NewState("401","用户名位数应在3-20位之间");
+        }else if((user.getUser_name()).contains(" ")){//用户名包含空格
+            return new NewState("401","用户名含空格");
         }else if(usermapper.checktelnum(user.getTelnum())!=null){//检查手机号有没有注册过
             return new NewState("409", "注册失败，注册使用的手机号已存在");
         }else if(usermapper.checkmail(user.getMail())!=null){

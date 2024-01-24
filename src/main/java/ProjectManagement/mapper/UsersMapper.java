@@ -26,13 +26,10 @@ public interface UsersMapper {
 
     @Select("select user_name from user where user_name=#{user_name}")//检查用户名是否注册过
      String checkname(String user_name);
-//
-//    @Select("select Type from 用户 where Telnum=#{Telnum}")
-//    public String getType(String Telnum);
-//
-//    @Select("select UserID from 用户 where Telnum=#{Telnum}")
-//    public String getid(String Telnum);//获取用户id
-//
+
+    @Select("select mail from employee where user_id=#{user_id}")//检查用户名是否注册过
+    String findmail(int user_id);
+
     @Insert("insert into user(user_name,telnum,password) values(#{user_name},#{telnum}, #{password})")//注册用户，一个手机号对应一个用户
     public int reg(User user);//返回值int代表插入了几条记录
 
