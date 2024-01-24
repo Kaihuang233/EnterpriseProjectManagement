@@ -17,7 +17,7 @@ public interface ProjectMapper {
             "values(#{project_name}, #{customer_name}, #{project_overview}, #{start_date}, #{end_date}, #{contract_amount}, #{user_id})")
     int CreateProject(Project project);
 
-    @Select("select project_name, project_id, customer_name, project_overview, start_date, end_date, contract_amount from project where project_id=#{project_id}")
+    @Select("select project_name, project_id, customer_name, project_overview, start_date, end_date, contract_amount, status from project where project_id=#{project_id}")
      List<Project> GetProject(Project project);
 
     @Select("select project_name, project_id, status, end_date from project ")
