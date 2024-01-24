@@ -38,16 +38,17 @@ public class PersonnelArrangeController implements PersonnelArrangeService {
 
     //获取某项目的人员安排列表
     @RequestMapping(value = "/Arrangement", method = RequestMethod.POST)
-    public NewState Arrangement(@RequestBody(required = false) Personnelarrangement personnelarrangement) {
+    public NewState Arrangement(@RequestBody(required = false) PersonnelarrangementPro personnelarrangementPro) {
         map = new TreeMap<>();
         try {
-            List<Personnelarrangement> l = personnelarrangementMapper.getpersonarrangePlus(personnelarrangement.getProject_id());
-            for (int i = 0; i < l.size(); i++) {
-                Personnelarrangement p = l.get(i);
-                p.setName(employeeMapper.get_nameByemp_id(l.get(i).getEmployee_id()));
-                l.set(i, p);
+            PersonnelarrangementPro pro;
+            List<Personnelarrangement> l = personnelarrangementMapper.getpersonarrangePlus(personnelarrangementPro.getProject_id());
+            List<PersonnelarrangementPro> lp = new LinkedList<>();
+            for (Personnelarrangement p : l) {
+                pro = new PersonnelarrangementPro(employeeMapper.get_nameByemp_id(p.getEmployee_id()), employeeMapper.get_post(p.getEmployee_id()), p);
+                lp.add(pro);
             }
-            map.put("Staffing", l);
+            map.put("Staffing", lp);
             return new NewState("200", "该项目人员安排如下", map);
         }catch (Exception e){
             return new NewState("400", "出现未知错误");

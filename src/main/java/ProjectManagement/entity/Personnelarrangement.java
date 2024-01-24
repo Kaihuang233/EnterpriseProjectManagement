@@ -30,8 +30,6 @@ public class Personnelarrangement {
     @JsonProperty(value = "end_date")
     private Date end_date = Transform.trans(end_date_json);
 
-    @JsonProperty(value = "name")
-    private String name;
 
     public Personnelarrangement(int employee_id, Date start_date){
         this.employee_id = employee_id;

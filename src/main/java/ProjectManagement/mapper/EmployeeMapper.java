@@ -59,6 +59,9 @@ public interface EmployeeMapper {
     @Select("select salary from employee where employee_id = #{employee_id}")
     int get_salary(int employee_id);//获取职员薪资
 
+    @Select("select post from employee where employee_id = #{employee_id}")
+    String get_post(int employee_id);//获取职员职位
+
     @Select("select code from employee where mail=#{mail}")
     String checkcode(String mail);//返回验证码
 
