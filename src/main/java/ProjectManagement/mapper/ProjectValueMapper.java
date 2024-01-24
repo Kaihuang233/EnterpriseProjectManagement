@@ -11,8 +11,8 @@ import java.util.List;
 
 @Mapper
 public interface ProjectValueMapper {
-    @Select("select * from projectvalue where project_id=#{project_id}")
-    List<Projectvalue> GetProjectvalue(Projectvalue projectvalue);//获取某项目的进度信息
+    @Select("select * from projectvalue where project_id = #{project_id}")
+    List<Projectvalue> GetProjectvalue(int project_id);//获取某项目的进度信息
 
     @Select("select project_id from projectvalue where project_id=#{project_id}")
      List<Integer> existProjectvalue(Projectvalue projectvalue);//查询某项目是否存在

@@ -15,6 +15,9 @@ public interface UsersMapper {
     @Select("select user_id from user where user_name=#{user_name}")
     Integer getuser_id(String user_name);//通过姓名获取id
 
+    @Select("select user_name from user where user_id=#{user_id}")
+    String getuser_name(int user_id);//通过姓名获取id
+
     @Select("select user_id from user where telnum=#{telnum}")
     Integer getuser_idByphone(String telnum);//通过电话获取id
 
@@ -36,5 +39,7 @@ public interface UsersMapper {
     @Update("update user set telnum=#{telnum}, password = #{password} where user_id =#{user_id} ")//修改用户重要信息
     void updateimportant(User user);
 
+    @Update("update user set password=#{password} where user_id =#{user_id} ")//修改密码
+    void updatepassword(int user_id, String password);
 
 }

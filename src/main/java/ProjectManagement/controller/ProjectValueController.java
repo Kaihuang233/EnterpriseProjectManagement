@@ -6,15 +6,12 @@ import ProjectManagement.mapper.PersonnelarrangementMapper;
 import ProjectManagement.mapper.ProjectMapper;
 import ProjectManagement.mapper.ProjectValueMapper;
 import ProjectManagement.service.ProjectValueService;
-import ProjectManagement.controller.ProjectValueTool;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.*;
-
-import static java.lang.Math.*;
 
 
 @CrossOrigin(origins = "*")//跨域
@@ -31,8 +28,6 @@ public class ProjectValueController implements ProjectValueService {
     private PersonnelarrangementMapper personnelarrangementMapper;//实例化对象并注入
     @Resource
     private PersonnelArrangeController personnelArrangeController;
-
-    private ProjectValueTool p;
 
     private Map<String, Object> map;
 
@@ -139,12 +134,25 @@ public class ProjectValueController implements ProjectValueService {
         return new NewState("200", "该项目各月的人员产值如下", map);
     }
 
+    //获取某项目的进度
+    @RequestMapping(value = "/getprojectprogress", method = RequestMethod.POST)
+    public NewState getprojectprogress(@RequestBody(required = false) Projectvalue Projectvalue) {
+        map = new TreeMap<>();
+
+        try {
+            map.put("project_progress", projectValueMapper.GetProjectvalue(Projectvalue.getProject_id()));
+            return new NewState("200", "该项目的进度列表如下", map);
+        }catch (Exception e){
+            return new NewState("400", "项目不存在");
+        }
+    }
+
 
     //获取该项目各月的项目支撑产值
     public Map<String,Integer> getprojectValue1(Projectvalue projectvalue) {
         map = new TreeMap<>();
 
-        List<Projectvalue> list = projectValueMapper.GetProjectvalue(projectvalue);
+        List<Projectvalue> list = projectValueMapper.GetProjectvalue(projectvalue.getProject_id());
         Date Dtemp = list.get(0).getChange_date();
         Integer Ptemp = list.get(0).getProject_progress();
         List<Date> dates = new LinkedList<>();

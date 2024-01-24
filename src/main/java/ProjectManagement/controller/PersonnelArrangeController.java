@@ -1,19 +1,14 @@
 package ProjectManagement.controller;
 
-import ProjectManagement.entity.NewState;
-import ProjectManagement.entity.Project;
-import ProjectManagement.entity.State;
-import ProjectManagement.entity.Personnelarrangement;
+import ProjectManagement.entity.*;
+import ProjectManagement.mapper.EmployeeMapper;
 import ProjectManagement.mapper.PersonnelarrangementMapper;
 import ProjectManagement.mapper.ProjectMapper;
 import ProjectManagement.service.PersonnelArrangeService;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 @CrossOrigin(origins = "*")//跨域
 @RestController
@@ -21,12 +16,18 @@ public class PersonnelArrangeController implements PersonnelArrangeService {
     @Resource
     private PersonnelarrangementMapper personnelarrangementMapper;
 
+    @Resource
+    private EmployeeMapper employeeMapper;
+
     private Map<String, Object> map;
 
     //新增人员安排
     @RequestMapping(value = "/newArrangement", method = RequestMethod.POST)
-    public NewState newArrangement(@RequestBody Personnelarrangement[] personnelarrangements) {
+    public NewState newArrangement(@RequestBody List<Personnelarrangement> personnelarrangements) {
         map = new TreeMap<>();
+        if (!Objects.equals(employeeMapper.get_type(personnelarrangements.get(0).getUser_id()), "管理员") && !Objects.equals(employeeMapper.get_type(personnelarrangements.get(0).getUser_id()), "组长")) {
+            return new NewState("400", "权限不足");
+        }
         int i = 0;
         for(Personnelarrangement p : personnelarrangements){
             personnelarrangementMapper.reg(p);
@@ -41,6 +42,16 @@ public class PersonnelArrangeController implements PersonnelArrangeService {
         map = new TreeMap<>();
         map.put("employee_id", personnelarrangementMapper.getpersonarrange(personnelarrangement.getProject_id()));
         return new NewState("200", "该项目人员安排如下", map);
+    }
+
+    //将某员工从项目中删除
+    @RequestMapping(value = "/delEmployee", method = RequestMethod.POST)
+    public NewState DelEmployee(@RequestBody(required = false) Employee employee) {
+        if (!Objects.equals(employeeMapper.get_type(employee.getUser_id()), "管理员") && !Objects.equals(employeeMapper.get_type(employee.getUser_id()), "组长")) {
+            return new NewState("400", "权限不足");
+        }
+        personnelarrangementMapper.delete(employee);
+        return new NewState("200", "员工信息已删除");
     }
     //返回今年有项目的人员安排对象
     public List<Personnelarrangement> Theyear(Personnelarrangement personnelarrangement){

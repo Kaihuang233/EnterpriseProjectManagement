@@ -14,7 +14,7 @@ import java.util.*;
 import ProjectManagement.mapper.UsersMapper;
 
 @RestController
-public class SendMailController extends Thread{
+public class SendMailController {
     @Autowired
     private SendMail sendMailService;
 
@@ -52,17 +52,12 @@ public class SendMailController extends Thread{
         return new NewState("401", "验证失败");
 
     }
-    @Override
-    public void run() {
 
-    }
     //找回密码
     @RequestMapping(value = "/findpassword", method = RequestMethod.POST)
     public NewState findpassword(@RequestBody(required = false)User user) {
         map = new HashMap<>();
         try {
-            SendMailController t1 = new SendMailController();
-            t1.start();
             if(Objects.equals(usersMapper.findmail(usersMapper.getuser_id(user.getUser_name())), user.getMail())) {//邮箱对应该用户
                 String code = verificationCode();
                 sendMailService.sendTxtMail1(user.getMail(),"您好，您的验证码为：",code+" \n验证码在五分钟内有效，请尽快进行验证");//发送验证码

@@ -15,6 +15,9 @@ public class Personnelarrangement {
     @JsonProperty(value = "project_id")
     private int project_id;
 
+    @JsonProperty(value = "user_id")
+    private int user_id;
+
     @JsonProperty(value = "start_date_json")
     private String start_date_json;
 

@@ -1,10 +1,7 @@
 package ProjectManagement.controller;
 
 
-import ProjectManagement.entity.Employee;
-import ProjectManagement.entity.NewState;
-import ProjectManagement.entity.Personnelarrangement;
-import ProjectManagement.entity.State;
+import ProjectManagement.entity.*;
 import ProjectManagement.mapper.EmployeeMapper;
 import ProjectManagement.mapper.PersonnelarrangementMapper;
 import ProjectManagement.service.EmployeeService;
@@ -12,6 +9,8 @@ import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+
+import static java.lang.Math.max;
 
 @CrossOrigin(origins = "*")//跨域
 @RestController
@@ -36,10 +35,64 @@ public class EmployeeController implements EmployeeService {
 
     //获取职员列表
     @RequestMapping(value = "/GetEmployeeList", method = RequestMethod.GET)
-    public NewState getemployee() {
+    public NewState getemployee(@RequestBody(required = false) ) {
         map = new TreeMap<>();
-        map.put("list", employeeMapper.getemplist());
-        return new NewState("200", "员工id列表如下", map);
+
+        List<String> l = new LinkedList<>();
+        l.add("架构师");
+        l.add("开发经理");
+        l.add("开发主管");
+        l.add("前端开发");
+        l.add("后端开发");
+        l.add("数据库人员");
+        l.add("测试工程师");
+        List<EmployeeList> employeeLists = new ArrayList<>();
+        EmployeeList employeeList;
+        for(String s : l){
+            employeeList = new EmployeeList();
+            employeeList.setPost(s);
+            employeeList.setEmployees(employeeMapper.getemplist());
+            employeeLists.add(employeeList);
+        }
+        map.put("EmployeeList", employeeLists);
+        return new NewState("200", "员工列表如下", map);
+    }
+
+    //搜索职员列表
+    @RequestMapping(value = "/searchEmployeeList", method = RequestMethod.GET)
+    public NewState searchEmployeeList(EmployeePlus employeePlus) {
+        map = new TreeMap<>();
+
+        try {
+            List<EmployeePlus> l1;
+            List<EmployeePlus> ll1 = new ArrayList<>();//存符合条件项目的信息
+            List<Integer> l2;
+            if (Objects.equals(employeePlus.getName(), "")) {//为空时搜索所有
+                l1 = employeeMapper.getemplistPlus();
+                ll1 = l1;
+                }
+            else{
+                Personnelarrangement personnelarrangement = new Personnelarrangement();
+                personnelarrangement.setEnd_date(employeePlus.getEntry_date());
+                l1 = employeeMapper.getemplistPlus1(employeePlus);
+                l2 = personnelarrangementMapper.getperson(personnelarrangement);
+                if(ll1.size()>=15) {
+                    for (int i = 15 * (Integer.parseInt(project.getPage()) - 1); i < 15 * Integer.parseInt(project.getPage()); i++) {
+                        if(ll1.size()-1 < i)
+                            break;
+                        ll2.add(ll1.get(i));
+                    }
+                    map.put("TotalResult", String.valueOf(ll1.size()));
+                    map.put("ProjectList", ll2);
+                    return new NewState("200", "该项目信息如下", map);
+                }
+            }
+            map.put("TotalResult", String.valueOf(ll1.size()));
+            map.put("ProjectList", ll1);
+            return new NewState("200", "该项目信息如下", map);
+        }catch (Exception e){
+            return new NewState("400", e.toString());
+        }
     }
 
     //获得某日期空闲的员工列表
@@ -67,16 +120,26 @@ public class EmployeeController implements EmployeeService {
         }
     }
 
-    //将某员工设为离职
-    @RequestMapping(value = "/delEmployee", method = RequestMethod.POST)
-    public NewState DelEmployee(@RequestBody(required = false) Employee employee) {
-        employee.setPost("离职");
-        employee.setType("离职");
-        employee.setSalary(0);
-        employeeMapper.setemployee(employee);
-        personnelarrangementMapper.delete(employee);
-        return new NewState("200", "员工信息已删除");
+    //获取职务类型列表
+    @RequestMapping(value = "/GetAllpost", method = RequestMethod.POST)
+    public NewState GetAllpost() {
+        map = new TreeMap<>();
+        try {
+            List<String> l = new LinkedList<>();
+            l.add("架构师");
+            l.add("开发经理");
+            l.add("开发主管");
+            l.add("前端开发");
+            l.add("后端开发");
+            l.add("数据库人员");
+            l.add("测试工程师");
+            map.put("PostList", l);
+            return new NewState("200", "职务类型如下", map);
+        }catch (Exception e){
+            return new NewState("400", "出现未知错误", map);
+        }
     }
+
 
     //修改某员工信息
     @RequestMapping(value = "/UpdateEmployee", method = RequestMethod.POST)

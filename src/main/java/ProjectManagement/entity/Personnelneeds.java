@@ -15,5 +15,4 @@ public class Personnelneeds {
     @JsonProperty(value = "project_id")
     private Integer project_id;
 
-
 }

@@ -12,7 +12,7 @@ import java.sql.Date;
 @Data
 public class Project {
     @JsonProperty(value = "project_id")
-    private int project_id;
+    private Integer project_id;
 
     @JsonProperty(value = "project_name")
     private String project_name;
@@ -25,6 +25,9 @@ public class Project {
 
     @JsonProperty(value = "start_date_json")
     private String start_date_json;
+
+    @JsonProperty(value = "status")
+    private String status;
 
     @JsonProperty(value = "start_date")
     private Date start_date = Transform.trans(start_date_json);

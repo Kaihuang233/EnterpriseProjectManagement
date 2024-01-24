@@ -13,7 +13,7 @@ public interface PersonnelarrangementMapper {
     @Select("select * from personnelarrangement where employee_id = #{employee_id}")
     List<Personnelarrangement> getinfo(int employee_id);
     @Select("select DISTINCT employee_id from personnelarrangement where end_date < #{end_date} ")
-    List<Integer>getperson(Personnelarrangement personnelarrangement);
+    List<Integer>getperson(Personnelarrangement personnelarrangement);//查找某日期空闲的员工id
 
     @Select("select employee_id from personnelarrangement where project_id = #{project_id} ")
     List<Integer>getpersonarrange(Integer project_id);

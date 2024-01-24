@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.TreeMap;
 
 @CrossOrigin(origins = "*")//跨域
 @RestController
@@ -33,6 +34,7 @@ public class UserController implements UserService {
         map = new HashMap<>();
         map.put("type", employeeMapper.get_type(usermapper.getuser_id(user.getUser_name())));
         map.put("usr_id", usermapper.getuser_id(user.getUser_name()));
+        map.put("user_name", user.getUser_name());
         try{
             if(Objects.equals(usermapper.check(user.getUser_name()), user.getPassword())){//确认密码
                 return new NewState("200", "登录成功", map);
@@ -40,6 +42,36 @@ public class UserController implements UserService {
                 return new NewState("412", "密码错误");
         }
     }catch (Exception e){
+            return new NewState("400", e.toString());
+        }
+    }
+
+    //重设密码并登录
+    @RequestMapping(value = "/resetpassword", method = RequestMethod.POST)
+    public NewState resetpassword(@RequestBody(required = false)User user) {
+        map = new TreeMap<>();
+        try{
+            if(user.getUser_name() == null){
+                return new NewState("401", "请输入用户名");
+            }else if(user.getPassword() == null){//密码空
+                return new NewState("401","请输入密码");
+            }else if(user.getUser_name().length() < 3 || user.getUser_name().length() > 20){//用户名位数
+                return new NewState("401","用户名位数应在3-20位之间");
+            }else if(user.getPassword().length() < 6 || user.getPassword().length() > 20){//密码位数
+                return new NewState("401","密码位数应在6-20位之间");
+            }else if((user.getPassword()).contains(" ")){//密码包含空格
+                return new NewState("401","密码含空格");
+            }else if((user.getUser_name()).contains(" ")){//用户名包含空格
+                return new NewState("401","用户名含空格");
+            } else if (!Objects.equals(user.getCode(), employeeMapper.checkcode1(usermapper.getuser_id(user.getUser_name())))|| Objects.equals(user.getCode(), "")) {//验证码不正确
+                return new NewState("401","验证码错误");
+            }else{
+                usermapper.updatepassword(usermapper.getuser_id(user.getUser_name()), user.getPassword());
+                employeeMapper.updatecode(employeeMapper.get_mail(usermapper.getuser_id(user.getUser_name())), "");
+                map.put("user_name", user.getUser_name());
+                return new NewState("400","密码修改成功，登录成功");
+            }
+        }catch (Exception e){
             return new NewState("400", e.toString());
         }
     }
@@ -61,6 +93,10 @@ public class UserController implements UserService {
             return new NewState("401","请输入密码");
         }else if(user.getUser_name().length() < 3 || user.getUser_name().length() > 20){//用户名位数
             return new NewState("401","用户名位数应在3-20位之间");
+        }else if(user.getPassword().length() < 6 || user.getPassword().length() > 20){//密码位数
+            return new NewState("401","密码位数应在6-20位之间");
+        }else if((user.getPassword()).contains(" ")){//密码包含空格
+            return new NewState("401","密码含空格");
         }else if((user.getUser_name()).contains(" ")){//用户名包含空格
             return new NewState("401","用户名含空格");
         }else if(usermapper.checktelnum(user.getTelnum())!=null){//检查手机号有没有注册过
@@ -77,6 +113,7 @@ public class UserController implements UserService {
 
             map.put("type", employeeMapper.get_type(usermapper.getuser_idByphone(user.getTelnum())));
             map.put("user_id", usermapper.getuser_idByphone(user.getTelnum()));
+            map.put("user_name", user.getUser_name());
             employeeMapper.updatecode(user.getMail(), "");//将验证码设为空
             return new NewState("401", "注册成功！", map);
         }}catch (Exception e){

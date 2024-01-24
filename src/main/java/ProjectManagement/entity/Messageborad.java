@@ -18,6 +18,9 @@ public class Messageborad {
     @JsonProperty(value = "type")
     private String type;
 
+    @JsonProperty(value = "user_name")
+    private String user_name;
+
     @JsonProperty(value = "user_id")
     private Integer user_id;
 

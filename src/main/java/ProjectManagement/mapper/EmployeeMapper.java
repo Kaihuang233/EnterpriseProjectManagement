@@ -1,5 +1,6 @@
 package ProjectManagement.mapper;
 
+import ProjectManagement.entity.EmployeePlus;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Insert;
@@ -21,8 +22,17 @@ public interface EmployeeMapper {
     @Select("select employee_id from Employee")
     List<Integer> getallId();//获取所有职员id
 
-    @Select("select employee_id, name, telnum, mail, age, post, type, salary, sex, entry_date from Employee")
+    @Select("select employee_id, name, telnum, age, type, salary, sex, entry_date, city, post, user_id from Employee")
     List<Employee> getemplist();//获取职员列表
+
+    @Select("select employee_id, name, telnum, age, type, salary, sex, entry_date, city, post, user_id from Employee")
+    List<EmployeePlus> getemplistPlus();//获取plus职员列表
+
+    @Select("select employee_id, name, telnum, age, type, salary, sex, entry_date, city, post, user_id from Employee where name like (CONCAT('%',#{name},'%'))")
+    List<EmployeePlus> getemplistPlus1(EmployeePlus employeePlus);//获取plus职员列表
+
+    @Select("select employee_id, name, telnum, age, type, salary, sex, entry_date from Employee where post = #{post}")
+    List<Employee> getemplist1(String post);//根据职位获取职员列表
 
     @Update("update employee set user_id=#{user_id} where telnum =#{mail}")//将职员与用户绑定
     int Set_user(String mail, int user_id);
@@ -40,6 +50,9 @@ public interface EmployeeMapper {
     @Select("select name from employee where user_id = #{user_id}")
     String get_name(int user_id);
 
+    @Select("select mail from employee where user_id = #{user_id}")
+    String get_mail(int user_id);//获取邮箱
+
     @Select("select name from employee where employee_id = #{employee_id}")
     String get_nameByemp_id(int employee_id);//通过职员id获取姓名
 
@@ -48,6 +61,9 @@ public interface EmployeeMapper {
 
     @Select("select code from employee where mail=#{mail}")
     String checkcode(String mail);//返回验证码
+
+    @Select("select code from employee where user_id=#{user_id}")
+    String checkcode1(int user_id);//返回验证码
 
     @Select("select mail from employee where mail=#{mail}")//查找邮箱是否存在
     String check(String mail);

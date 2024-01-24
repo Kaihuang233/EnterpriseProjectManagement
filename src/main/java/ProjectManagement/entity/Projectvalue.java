@@ -5,11 +5,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.sql.Date;
+
 @Data
 public class Projectvalue {
-
-    @JsonProperty(value = "project_id")
-    private Integer project_id;
 
     @JsonProperty(value = "user_id")
     private Integer user_id;
@@ -25,5 +23,8 @@ public class Projectvalue {
 
     @JsonProperty(value = "project_progress")
     private Integer project_progress;
+
+    @JsonProperty(value = "project_id")
+    private Integer project_id;
 
 }
