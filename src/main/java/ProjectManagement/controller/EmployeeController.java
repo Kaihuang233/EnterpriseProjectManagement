@@ -58,42 +58,54 @@ public class EmployeeController implements EmployeeService {
         return new NewState("200", "员工列表如下", map);
     }
 
-//    //搜索职员列表
-//    @RequestMapping(value = "/searchEmployeeList", method = RequestMethod.GET)
-//    public NewState searchEmployeeList(EmployeePlus employeePlus) {
-//        map = new TreeMap<>();
-//
-//        try {
-//            List<EmployeePlus> l1;
-//            List<EmployeePlus> ll1 = new ArrayList<>();//存符合条件项目的信息
-//            List<Integer> l2;
-//            if (Objects.equals(employeePlus.getName(), "")) {//为空时搜索所有
-//                l1 = employeeMapper.getemplistPlus();
-//                ll1 = l1;
-//                }
-//            else{
-//                Personnelarrangement personnelarrangement = new Personnelarrangement();
-//                personnelarrangement.setEnd_date(employeePlus.getEntry_date());
-//                l1 = employeeMapper.getemplistPlus1(employeePlus);
-//                l2 = personnelarrangementMapper.getperson(personnelarrangement);
-//                if(ll1.size()>=15) {
-//                    for (int i = 15 * (Integer.parseInt(project.getPage()) - 1); i < 15 * Integer.parseInt(project.getPage()); i++) {
-//                        if(ll1.size()-1 < i)
-//                            break;
-//                        ll2.add(ll1.get(i));
-//                    }
-//                    map.put("TotalResult", String.valueOf(ll1.size()));
-//                    map.put("ProjectList", ll2);
-//                    return new NewState("200", "该项目信息如下", map);
-//                }
-//            }
-//            map.put("TotalResult", String.valueOf(ll1.size()));
-//            map.put("ProjectList", ll1);
-//            return new NewState("200", "该项目信息如下", map);
-//        }catch (Exception e){
-//            return new NewState("400", e.toString());
-//        }
-//    }
+    //搜索职员列表
+    @RequestMapping(value = "/searchEmployeeList", method = RequestMethod.POST)
+    public NewState searchEmployeeList(@RequestBody(required = false)EmployeePlus employeePlus) {
+        map = new TreeMap<>();
+        employeePlus.setDate(Transform.trans(employeePlus.getDate_json()));
+        System.out.println(employeePlus);
+        try {
+            if (!Objects.equals(employeeMapper.get_type(employeePlus.getUser_id()), "管理员") && !Objects.equals(employeeMapper.get_type(employeePlus.getUser_id()), "组长")) {
+                return new NewState("400", "权限不足");
+            }
+            List<EmployeePlus> l1;
+            List<EmployeePlus> ll1 = new ArrayList<>();//存符合条件员工的信息
+            List<EmployeePlus> ll2 = new ArrayList<>();//存该页码的员工的信息
+            List<Integer> l2;
+            Personnelarrangement personnelarrangement = new Personnelarrangement();
+            personnelarrangement.setEnd_date(employeePlus.getDate());
+            l1 = employeeMapper.getemplistPlus1(employeePlus);//获取满足姓名要求的员工信息
+            l2 = personnelarrangementMapper.getperson(personnelarrangement);//获取满足日期要求的员工id
+
+            if(Objects.equals(employeePlus.getDate_json(), "")||employeePlus.getDate_json()==null) {//筛选日期为空
+                map.put("total", String.valueOf(l1.size()));
+                map.put("EmployeeList", l1);
+                return new NewState("200", "员工信息如下", map);
+            }
+
+            for (EmployeePlus plus : l1) {
+                for (int j : l2) {
+                    if (plus.getEmployee_id() == j)
+                        ll1.add(plus);
+                }
+            }
+            if(ll1.size()>=15) {
+                for (int i = 15 * (Integer.parseInt(employeePlus.getPage()) - 1); i < 15 * Integer.parseInt(employeePlus.getPage()); i++) {
+                    if(ll1.size()-1 < i)
+                        break;
+                    ll2.add(ll1.get(i));
+                }
+                map.put("TotalResult", String.valueOf(ll1.size()));
+                map.put("ProjectList", ll2);
+                return new NewState("200", "员工信息如下", map);
+            }
+            map.put("total", String.valueOf(ll1.size()));
+            map.put("EmployeeList", ll1);
+            return new NewState("200", "员工信息如下", map);
+        }catch (Exception e){
+            return new NewState("400", e.toString());
+        }
+    }
 
     //获得某日期空闲的员工列表
     @RequestMapping(value = "/GetEmpArrange", method = RequestMethod.POST)
