@@ -18,6 +18,9 @@ public interface PersonnelarrangementMapper {
     @Select("select employee_id from personnelarrangement where project_id = #{project_id} ")
     List<Integer>getpersonarrange(Integer project_id);
 
+    @Select("select employee_id, start_date, end_date from personnelarrangement where project_id = #{project_id} ")
+    List<Personnelarrangement>getpersonarrangePlus(Integer project_id);
+
     @Select("select start_date from personnelarrangement where employee_id = #{employee_id} && project_id = #{project_id}")
     Date getPersonStartDate(Integer employee_id, Integer project_id);//获取人员起始日期
 
