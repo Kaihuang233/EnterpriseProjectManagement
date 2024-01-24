@@ -1,7 +1,9 @@
 package ProjectManagement.mapper;
 
+import ProjectManagement.entity.EmployeePlus;
 import ProjectManagement.entity.Project;
 import ProjectManagement.entity.Projectvalue;
+import ProjectManagement.entity.RecentProject;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
@@ -29,6 +31,8 @@ public interface ProjectValueMapper {
     @Select("select DISTINCT project_id from projectvalue ")
     int[] getid();//获取所有项目id
 
+    @Select("select DISTINCT project_id from project where project.project_name like (CONCAT('%',#{project_name},'%'))")
+    int[] getproid(RecentProject recentProject);//获取某名称的项目id
     @Insert("insert into projectvalue(project_id, user_id, change_date, project_progress) " +
             "values(#{project_id}, #{user_id}, #{change_date}, #{project_progress})")
     int CreateProgress(Projectvalue projectvalue);//新建项目进度

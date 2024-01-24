@@ -28,6 +28,9 @@ public class EmployeeController implements EmployeeService {
             return new NewState("401", "请补全信息");
         }
         else {
+            if (!Objects.equals(employeeMapper.get_type(employee.getUser_id()), "管理员") && !Objects.equals(employeeMapper.get_type(employee.getUser_id()), "组长")) {
+                return new NewState("400", "权限不足");
+            }
             employeeMapper.CreateEmployee(employee);
             return new NewState("增添人员" + employee.getName() + "成功");
         }
@@ -156,6 +159,9 @@ public class EmployeeController implements EmployeeService {
     //修改某员工信息
     @RequestMapping(value = "/UpdateEmployee", method = RequestMethod.POST)
     public NewState UpdateEmployee(@RequestBody(required = false) Employee employee) {
+        if (!Objects.equals(employeeMapper.get_type(employee.getUser_id()), "管理员") && !Objects.equals(employeeMapper.get_type(employee.getUser_id()), "组长")) {
+            return new NewState("400", "权限不足");
+        }
         employeeMapper.Upemployee(employee);
         return new NewState("200", "员工信息已修改");
     }

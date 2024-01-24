@@ -338,12 +338,37 @@ public class ProjectValueController implements ProjectValueService {
         return  l;
     }
     @RequestMapping(value = "/getRecentpro", method = RequestMethod.POST)
-    public NewState getRecentpro(){
+    public NewState getRecentpro(@RequestBody(required = false) RecentProject recentProject){
         map = new TreeMap<>();
 
-        return new NewState("200", "最近三个月内立项的项目及信息如下：", getRecentpro1());
+        return new NewState("200", "查询的项目信息如下：", getRecentpro2(recentProject));
     }
 
+    public List<RecentProject> getRecentpro2(RecentProject recentProject){
+        List<RecentProject> l = new LinkedList<>();
+        RecentProject r;
+
+        //存储最近三个月内立项的项目id
+        int []a = projectValueMapper.getproid(recentProject);
+        Personnelarrangement personnelarrangement;
+        for(int i : a){//遍历所有项目
+            r = new RecentProject();
+            personnelarrangement = new Personnelarrangement();//设置立项日期和截止日期
+            personnelarrangement.setStart_date(projectMapper.GetProjectSdate(i));
+            personnelarrangement.setEnd_date(projectMapper.GetProjectEdate(i));
+
+            r.setProject_name(projectMapper.GetProjectname(i));//设置项目名称
+            r.setStart_date(projectMapper.GetProjectSdate(i));//设置立项日期
+            r.setContract_amount(projectMapper.GetProjectAmount(i));//设置合同额
+            r.setProject_amount(getannualProjectValue1(personnelarrangement).getValue());//获取到目前的项目支撑产值
+            r.setPerson_amount(getannualPersonValue1(personnelarrangement).getValue());//获取到目前的人员支撑产值
+            r.setTotal_amount(r.getProject_amount()+r.getPerson_amount());//设置当前的总产值
+            System.out.println(r);
+            l.add(r);
+        }
+
+        return  l;
+    }
 
 
 
