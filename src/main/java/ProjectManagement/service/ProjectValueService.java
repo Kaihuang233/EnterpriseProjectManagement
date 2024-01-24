@@ -1,6 +1,7 @@
 package ProjectManagement.service;
 
 import ProjectManagement.entity.*;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.sql.Date;
 import java.util.List;
@@ -22,4 +23,6 @@ public interface ProjectValueService {
     NewState getannualPersonValue(Personnelarrangement personnelarrangement);//获取某年人员支撑产值
 
     NewState getannualProjectValue(Personnelarrangement personnelarrangement);//获取某年项目支撑产值
+
+    NewState getRecentpro(RecentProject recentProject);//按名称筛选项目
 }
