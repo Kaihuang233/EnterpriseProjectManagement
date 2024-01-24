@@ -23,17 +23,17 @@ public class PersonnelneedsController implements PersonnelneedsService {
 
     //新建人员需求
     @RequestMapping(value = "/Personneeds", method = RequestMethod.POST)
-    public NewState NewPersonnelneeds(@RequestBody Personnelneeds[] personnelneeds) {
+    public NewState NewPersonnelneeds(@RequestBody PersonnelRequirements personnelRequirements) {
         try {
             int i = 0;
-            for (Personnelneeds p : personnelneeds) {
+            for (Personnelneeds p : personnelRequirements.getPersonnelneeds()) {
                 personnelneedsMapper.CreatePerneeds(p);
-                System.out.println(p.toString());
                 i++;
             }
-            System.out.println(Arrays.toString(personnelneeds));
+
             return new NewState("200", "共" + i + "位的人员需求已添加");
         } catch (Exception e) {
+            System.out.println(e);
             return new NewState("400", "发生未知错误");
         }
     }

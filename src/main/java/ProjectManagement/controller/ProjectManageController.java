@@ -29,12 +29,13 @@ public class ProjectManageController implements ProjectManagementService {
         map = new TreeMap<>();
         if (project.getContract_amount()==null)
             return new NewState("401", "请保证信息输入完整");
-        else if (!projectMapper.GetProjectName(project.getProject_name()).isEmpty()){
+        else if (projectMapper.GetProjectName(project.getProject_name())!=null){
             return new NewState("401", "项目名称重复");
         }else{
                 try {
                     projectMapper.CreateProject(project);
                     map.put("user_id", project.getUser_id());
+                    map.put("project_id", projectMapper.GetProject_id(project.getProject_name()));
                     return new NewState("200",project.getProject_name() + "创建成功", map);
                 }catch (Exception e){
                     System.out.println(e);
