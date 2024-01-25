@@ -364,6 +364,7 @@ public class ProjectValueController implements ProjectValueService {
             r.setProject_amount(getannualProjectValue1(personnelarrangement).getValue());//获取到目前的项目支撑产值
             r.setPerson_amount(getannualPersonValue1(personnelarrangement).getValue());//获取到目前的人员支撑产值
             r.setTotal_amount(r.getProject_amount()+r.getPerson_amount());//设置当前的总产值
+            r.setProject_id(i);
             System.out.println(r);
             l.add(r);
         }

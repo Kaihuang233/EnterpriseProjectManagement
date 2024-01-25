@@ -29,4 +29,7 @@ public class RecentProject {
     @JsonProperty(value = "total_amount")
     private Integer total_amount;
 
+    @JsonProperty(value = "project_id")
+    private Integer project_id;
+
 }
