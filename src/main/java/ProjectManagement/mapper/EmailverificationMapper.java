@@ -1,5 +1,7 @@
 package ProjectManagement.mapper;
 
+import ProjectManagement.entity.Employee;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
@@ -16,4 +18,7 @@ public interface EmailverificationMapper {
 
     @Update("update emailverification set code=#{code} where mail =#{mail}")//更新验证码
     void updatecode(String mail, String code);
+
+    @Delete("delete from emailverification where mail = #{mail}")
+    void delete(String mail);
 }

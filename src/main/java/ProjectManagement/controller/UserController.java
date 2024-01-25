@@ -224,6 +224,7 @@ public class UserController implements UserService {
             if(Objects.equals(emailverification.getCode(), emailverificationMapper.checkcode(emailverification.getMail()))&& !Objects.equals(emailverification.getCode(), "")&&emailverification.getCode()!=null){
                 employeeMapper.updatecode(employeeMapper.get_mail(emailverification.getUser_id()), "");
                 employeeMapper.updateMail(emailverification.getMail(), emailverification.getUser_id());
+                emailverificationMapper.delete(emailverification.getMail());
                 return new NewState("200", "用户邮箱已修改");
             }else{
                 return new NewState("401", "验证码错误");
