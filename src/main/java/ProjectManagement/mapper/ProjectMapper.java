@@ -26,8 +26,14 @@ public interface ProjectMapper {
     @Select("select project_name, project_id, status, end_date from project ")
     List<ProjectWithProgress> GetProjectList1();//无条件获取项目列表
 
-    @Select("select project_name, project_id, status, end_date from project where project_name like (CONCAT('%',#{project_name},'%')) and status = #{status}")
+    @Select("select project_name, project_id, status, end_date from project where project_name like (CONCAT('%',#{project_name},'%')) and status like (CONCAT('%',#{status},'%'))")
     List<ProjectWithProgress> GetProjectList2(Project project);//有条件获取项目列表
+
+    @Select("select project_name, project_id, status, end_date from project where status like (CONCAT('%',#{status},'%'))")
+    List<ProjectWithProgress> GetProjectList3(Project project);//当筛选信息不为全部但名称为全部时
+
+    @Select("select project_name, project_id, status, end_date from project where project_name like (CONCAT('%',#{project_name},'%'))")
+    List<ProjectWithProgress> GetProjectList4(Project project);//当筛选信息为全部但状态不为全部时
 
     @Select("select project_progress from projectvalue where project_id=#{project_id}")
     List<Projectvalue> GetProjectValue(int project_id);//获取某项目的所有进度

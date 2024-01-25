@@ -53,8 +53,9 @@ public class ProjectManageController implements ProjectManagementService {
         try {
             List<ProjectWithProgress> l1;
             List<ProjectWithProgress> ll1 = new ArrayList<>();//存符合条件项目的信息
+            List<ProjectWithProgress> ll3;//存筛选项目状态的项目信息
             List<Projectvalue> l2;
-            if (Objects.equals(project.getProject_name(), "")) {//为空时搜索所有
+            if (Objects.equals(project.getProject_name(), "") && Objects.equals(project.getStatus(), "全部")) {//为空时搜索所有
                 l1 = projectMapper.GetProjectList1();
                 for (ProjectWithProgress p : l1) {
                     l2 = projectMapper.GetProjectValue(p.getProject_id());
@@ -66,7 +67,53 @@ public class ProjectManageController implements ProjectManagementService {
                     p.setProject_progress(temp);//设置最新进度
                     ll1.add(p);
                 }
-            }else{
+            } else if (Objects.equals(project.getProject_name(), "")) {//状态不为全部
+                l1 = projectMapper.GetProjectList3(project);
+                ll3 = new ArrayList<>();//存符合条件项目的信息的那15条
+                for (ProjectWithProgress p : l1) {
+                    l2 = projectMapper.GetProjectValue(p.getProject_id());
+                    int temp = 0;
+                    for (Projectvalue pv : l2) {//获取最新进度
+                        temp = pv.getProject_progress();
+                        temp = max(temp, pv.getProject_progress());
+                    }
+                    p.setProject_progress(temp);//设置最新进度
+                    ll1.add(p);
+                }
+                if(ll1.size()>=15) {
+                    for (int i = 15 * (Integer.parseInt(project.getPage()) - 1); i < 15 * Integer.parseInt(project.getPage()); i++) {
+                        if (ll1.size() - 1 < i)
+                            break;
+                        ll3.add(ll1.get(i));
+                    }
+                    map.put("TotalResult", String.valueOf(ll1.size()));
+                    map.put("ProjectList", ll3);
+                    return new NewState("200", "该项目信息如下", map);
+                }
+            } else if (Objects.equals(project.getStatus(), "全部")) {//名称不为全部
+                l1 = projectMapper.GetProjectList4(project);
+                ll3 = new ArrayList<>();//存符合条件项目的信息的那15条
+                for (ProjectWithProgress p : l1) {
+                    l2 = projectMapper.GetProjectValue(p.getProject_id());
+                    int temp = 0;
+                    for (Projectvalue pv : l2) {//获取最新进度
+                        temp = pv.getProject_progress();
+                        temp = max(temp, pv.getProject_progress());
+                    }
+                    p.setProject_progress(temp);//设置最新进度
+                    ll1.add(p);
+                }
+                if(ll1.size()>=15) {
+                    for (int i = 15 * (Integer.parseInt(project.getPage()) - 1); i < 15 * Integer.parseInt(project.getPage()); i++) {
+                        if (ll1.size() - 1 < i)
+                            break;
+                        ll3.add(ll1.get(i));
+                    }
+                    map.put("TotalResult", String.valueOf(ll1.size()));
+                    map.put("ProjectList", ll3);
+                    return new NewState("200", "该项目信息如下", map);
+                }
+            } else{
                 l1 = projectMapper.GetProjectList2(project);
                 List<ProjectWithProgress> ll2 = new ArrayList<>();//存符合条件项目的信息的那15条
                 for (ProjectWithProgress p : l1) {
