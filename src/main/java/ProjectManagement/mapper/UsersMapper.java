@@ -1,6 +1,7 @@
 package ProjectManagement.mapper;
 
 
+import ProjectManagement.entity.Employee;
 import ProjectManagement.entity.User;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
@@ -26,6 +27,12 @@ public interface UsersMapper {
 
     @Select("select user_id from employee where mail=#{mail}")//检查邮箱是否注册过
      String checkmail(String mail);
+
+    @Select("select name, sex, age, city, telnum, mail from employee where user_id=#{user_id}")//获取登陆者信息
+    Employee getinfo(Integer user_id);
+
+    @Select("select password from user where user_id=#{user_id}")//获取密码
+    String getpassword(Integer user_id);
 
     @Select("select user_name from user where user_name=#{user_name}")//检查用户名是否注册过
      String checkname(String user_name);

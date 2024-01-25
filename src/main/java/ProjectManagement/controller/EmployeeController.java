@@ -73,9 +73,6 @@ public class EmployeeController implements EmployeeService {
         employeePlus.setDate(Transform.trans(employeePlus.getDate_json()));
         System.out.println(employeePlus);
         try {
-            if (!Objects.equals(employeeMapper.get_type(employeePlus.getUser_id()), "管理员") && !Objects.equals(employeeMapper.get_type(employeePlus.getUser_id()), "组长")) {
-                return new NewState("400", "权限不足");
-            }
             List<EmployeePlus> l1;
             List<EmployeePlus> ll1 = new ArrayList<>();//存符合条件员工的信息
             List<EmployeePlus> ll2 = new ArrayList<>();//存该页码的员工的信息

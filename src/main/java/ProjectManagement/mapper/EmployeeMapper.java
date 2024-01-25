@@ -40,7 +40,7 @@ public interface EmployeeMapper {
     @Update("update employee set telnum=#{telnum} where user_id =#{user_id}")//将职员手机号修改
     int Set_tel(String telnum, int user_id);
 
-    @Update("update employee set mail=#{mail} where user_id =#{user_id}")//将职员手机号修改
+    @Update("update employee set mail=#{mail} where user_id =#{user_id}")//将职员邮箱修改
     int Set_mail(String mail, int user_id);
     @Update("update employee set age=#{age}, sex=#{sex}, city=#{city} where user_id =#{user_id} ")//修改职员基本信息
     void updatebasic(Employee employee);
@@ -79,6 +79,12 @@ public interface EmployeeMapper {
 
     @Update("update employee set code=#{code} where mail =#{mail}")//更新验证码
     void updatecode(String mail, String code);
+
+    @Update("update user set password=#{password} where user_id =#{user_id}")//更新密码
+    void updatePassword(String password, Integer user_id);
+
+    @Update("update employee set mail=#{mail} where user_id =#{user_id}")//更新邮箱
+    void updateMail(String mail, Integer user_id);
 
     @Update("update employee set post = #{post}, type = #{type}, salary = #{salary} where employee_id =#{employee_id}")//将员工设为离职
     void setemployee(Employee employee);

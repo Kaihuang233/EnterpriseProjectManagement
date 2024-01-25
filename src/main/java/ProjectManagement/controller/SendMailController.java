@@ -25,6 +25,9 @@ public class SendMailController {
     @Resource
     private EmployeeMapper employeeMapper;
 
+    @Resource
+    private EmailverificationMapper emailverificationMapper;
+
     private Map<String, Object> map;
 
     @RequestMapping(value = "/sendmail",method = RequestMethod.POST)
@@ -40,6 +43,19 @@ public class SendMailController {
             return new NewState("200", "发送成功");
         }
     }
+
+    @RequestMapping(value = "/sendmailplus",method = RequestMethod.POST)
+    public NewState sendmailplus(@RequestBody(required = false) User user) {
+        if(user.getMail() == null)
+            return new NewState("401", "请输入邮箱");
+        else if (employeeMapper.checkcode(user.getMail())!=null) {//邮箱已存在
+            return new NewState("400", "邮箱已存在");
+        }
+        String code = verificationCode();
+        sendMailService.sendTxtMail1(user.getMail(),"您好，您的验证码为：",code+" \n验证码在五分钟内有效，请尽快进行验证");
+        emailverificationMapper.reg(user.getMail(), code);
+        return new NewState("400", "验证码已发送");
+    }
     //验证验证码
     @RequestMapping(value = "/vertifymail",method = RequestMethod.POST)
     public NewState vertifymail(@RequestBody(required = false)Employee employee) {
@@ -52,6 +68,7 @@ public class SendMailController {
         return new NewState("401", "验证失败");
 
     }
+
 
     //找回密码
     @RequestMapping(value = "/findpassword", method = RequestMethod.POST)

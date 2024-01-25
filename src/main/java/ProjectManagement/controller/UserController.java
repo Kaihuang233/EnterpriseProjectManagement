@@ -1,9 +1,6 @@
 package ProjectManagement.controller;
 
-import ProjectManagement.entity.Employee;
-import ProjectManagement.entity.NewState;
-import ProjectManagement.entity.State;
-import ProjectManagement.entity.User;
+import ProjectManagement.entity.*;
 import ProjectManagement.mapper.EmailverificationMapper;
 import ProjectManagement.mapper.EmployeeMapper;
 import ProjectManagement.mapper.UsersMapper;
@@ -26,6 +23,8 @@ public class UserController implements UserService {
     private EmployeeMapper employeeMapper;//实例化对象并注入
 
     private Map<String, Object> map;
+    @Resource
+    private EmailverificationMapper emailverificationMapper;
 
 
     //登录
@@ -126,7 +125,7 @@ public class UserController implements UserService {
     public NewState BasicInfoModify(@RequestBody(required = false)Employee employee) {
         map = new HashMap<>();
         try {
-            if (employee.getSex() == null || employee.getAge() == 0 || employee.getCity() == null)
+            if (employee.getSex() == null || employee.getAge() == 0 || employee.getCity() == null || employee.getName()==null)
                 return new NewState("401", "请补全信息！");
             else if(!Objects.equals(employeeMapper.get_name(employee.getUser_id()), employee.getName()))
                 return new NewState("401", "用户id与职员不对应");
@@ -139,6 +138,28 @@ public class UserController implements UserService {
             return new NewState("400", "出现未知原因错误");
         }
     }
+
+    //获取获取登陆者信息
+    @RequestMapping(value = "/getUserInformation", method = RequestMethod.POST)
+    public NewState getUserInformation(@RequestBody(required = false)Employee employee) {
+        map = new HashMap<>();
+        try {
+            EmployeePlus employeePlus = new EmployeePlus();
+            Employee employee1 = usermapper.getinfo(employee.getUser_id());
+            employeePlus.setUser_name(usermapper.getuser_name(employee.getUser_id()));
+            employeePlus.setAge(employee1.getAge());
+            employeePlus.setCity(employee1.getCity());
+            employeePlus.setName(employee1.getName());
+            employeePlus.setSex(employee1.getSex());
+            employeePlus.setPost(employee1.getPost());
+            employeePlus.setMail(employee1.getMail());
+            employeePlus.setTelnum(employee1.getTelnum());
+            return new NewState("200", "登陆者信息如下", employeePlus);
+        }catch (Exception e){
+            return new NewState("400", "出现未知原因错误");
+        }
+    }
+
     //修改重要信息
     @RequestMapping(value = "/InformationCompletion2", method = RequestMethod.POST)
     public NewState ImportantInfoModify(@RequestBody(required = false)User user) {
@@ -159,5 +180,61 @@ public class UserController implements UserService {
             return new NewState("400", "未知原因错误");
         }
     }
+
+    //修改手机号
+    @RequestMapping(value = "/UpdateTelnum", method = RequestMethod.POST)
+    public NewState UpdateTelnum(@RequestBody(required = false)Employee employee) {
+        map = new HashMap<>();
+        try {
+            if(Objects.equals(employee.getCode(), employeeMapper.checkcode(employeeMapper.get_mail(employee.getUser_id())))&& !Objects.equals(employee.getCode(), "")&&employee.getCode()!=null){
+                employeeMapper.Set_tel(employee.getTelnum(), employee.getUser_id());
+                employeeMapper.updatecode(employeeMapper.get_mail(employee.getUser_id()), "");
+                return new NewState("200", "用户手机号已修改");
+            }else{
+                return new NewState("401", "验证码错误");
+            }
+
+        }catch (Exception e){
+            return new NewState("400", e.toString());
+        }
+    }
+
+    //修改密码
+    @RequestMapping(value = "/UpdatePassword", method = RequestMethod.POST)
+    public NewState UpdatePassword(@RequestBody(required = false) ChangePassword changePassword) {
+        map = new HashMap<>();
+        try {
+                if(changePassword.getNew_password().length() < 20 && changePassword.getNew_password().length() > 6 && Objects.equals(usermapper.getpassword(changePassword.getUser_id()), changePassword.getPassword())) {
+                    employeeMapper.updatePassword(changePassword.getNew_password(), changePassword.getUser_id());
+                    return new NewState("200", "用户密码已修改");
+                }else{
+                    return new NewState("400", "密码位数不正确");
+                }
+            }catch (Exception e){
+            return new NewState("400", e.toString());
+        }
+    }
+
+    //修改邮箱
+    @RequestMapping(value = "/UpdateMail", method = RequestMethod.POST)
+    public NewState UpdateMail(@RequestBody(required = false) Emailverification emailverification) {
+        map = new HashMap<>();
+        System.out.println(emailverification);
+        try {
+            if(Objects.equals(emailverification.getCode(), emailverificationMapper.checkcode(emailverification.getMail()))&& !Objects.equals(emailverification.getCode(), "")&&emailverification.getCode()!=null){
+                employeeMapper.updatecode(employeeMapper.get_mail(emailverification.getUser_id()), "");
+                employeeMapper.updateMail(emailverification.getMail(), emailverification.getUser_id());
+                return new NewState("200", "用户邮箱已修改");
+            }else{
+                return new NewState("401", "验证码错误");
+            }
+
+        }catch (Exception e){
+            System.out.println(e);
+            return new NewState("400", e.toString());
+        }
+    }
+
+
 
 }
