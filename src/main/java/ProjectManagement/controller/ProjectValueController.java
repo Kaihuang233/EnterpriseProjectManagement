@@ -196,24 +196,26 @@ public class ProjectValueController implements ProjectValueService {
     }
 
     //计算某项目的各月产值
-    public Map<String,Integer> getValue1(@RequestBody(required = false) Projectvalue projectvalue) {
+    public Map<String,Object> getValue1(@RequestBody(required = false) Projectvalue projectvalue) {
         List<Map<String,Integer>> cp = new LinkedList<>();
         Map<String,Integer> cp22 = getallmonth(projectMapper.GetProjectSdate(projectvalue.getProject_id()), projectMapper.GetProjectEdate(projectvalue.getProject_id()));
-
+        int money = 0;
+        Map<String,Object> cp222 = new TreeMap<>();
         cp.add(getpersonValue1(projectvalue));
         cp.add(getprojectValue1(projectvalue));
         for(Map<String,Integer> map : cp){
             for(Map.Entry<String,Integer> entry:map.entrySet()){
                 cp22.replace(entry.getKey(), cp22.get(entry.getKey()) + entry.getValue());
+                money += cp22.get(entry.getKey());
             }
         }
-        return cp22;
+        cp222.put("projectvalue", cp22);
+        cp222.put("value", money);
+        return cp222;
     }
     @RequestMapping(value = "/getvalue", method = RequestMethod.POST)
     public NewState getValue(@RequestBody(required = false) Projectvalue projectvalue) {
-        Map<String, Map<String, Integer>> map = new TreeMap<>();
-        map.put("value", getValue1(projectvalue));
-        return new NewState("200", "该项目各月的产值如下", map);
+        return new NewState("200", "该项目各月的产值如下", getValue1(projectvalue));
     }
 
 
