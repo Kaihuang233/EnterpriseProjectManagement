@@ -28,7 +28,7 @@ public interface EmployeeMapper {
     @Select("select employee_id, name, telnum, age, type, salary, sex, entry_date, city, post, user_id from Employee")
     List<EmployeePlus> getemplistPlus();//获取plus职员列表
 
-    @Select("select employee_id, name, telnum, age, type, salary, sex, entry_date, city, post, user_id from Employee where name like (CONCAT('%',#{name},'%'))")
+    @Select("select employee_id, name, telnum, age, type, salary, sex, entry_date, city, post, user_id, mail from Employee where name like (CONCAT('%',#{name},'%'))")
     List<EmployeePlus> getemplistPlus1(EmployeePlus employeePlus);//获取plus职员列表
 
     @Select("select employee_id, name, telnum, age, type, salary, sex, entry_date from Employee where post = #{post}")
