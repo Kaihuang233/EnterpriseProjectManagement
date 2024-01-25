@@ -33,7 +33,7 @@ public class UserController implements UserService {
     public NewState login(@RequestBody(required = false)User user) {
         map = new HashMap<>();
         map.put("type", employeeMapper.get_type(usermapper.getuser_id(user.getUser_name())));
-        map.put("usr_id", usermapper.getuser_id(user.getUser_name()));
+        map.put("user_id", usermapper.getuser_id(user.getUser_name()));
         map.put("user_name", user.getUser_name());
         try{
             if(Objects.equals(usermapper.check(user.getUser_name()), user.getPassword())){//确认密码

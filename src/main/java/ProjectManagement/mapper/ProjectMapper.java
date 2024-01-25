@@ -20,6 +20,9 @@ public interface ProjectMapper {
     @Select("select project_name, project_id, customer_name, project_overview, start_date, end_date, contract_amount, status from project where project_id=#{project_id}")
      List<Project> GetProject(Project project);
 
+    @Select("select project_name, project_id, customer_name, project_overview, start_date, end_date, contract_amount, status from project where project_id=#{project_id}")
+    ProjectWithProgress GetProjectUni(Project project); //id获取信息
+
     @Select("select project_name, project_id, status, end_date from project ")
     List<ProjectWithProgress> GetProjectList1();//无条件获取项目列表
 

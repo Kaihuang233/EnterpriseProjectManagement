@@ -21,6 +21,9 @@ public class ProjectManageController implements ProjectManagementService {
 
     @Resource
     private EmployeeMapper employeeMapper;//实例化对象并注入
+
+    @Resource
+    private ProjectValueMapper projectValueMapper;//实例化对象并注入
     private Map<String, Object> map;
 
     //新建项目
@@ -97,9 +100,18 @@ public class ProjectManageController implements ProjectManagementService {
 
     //项目信息查询
     @RequestMapping(value = "/ProjectSearch", method = RequestMethod.POST)
-    public NewState projectsearch(@RequestBody(required = false) Project project) {
+    public NewState projectsearch(@RequestBody(required = false) ProjectWithProgress project) {
         map = new TreeMap<>();
-        map.put("Project", projectMapper.GetProject(project));
+        List<Projectvalue> l = projectValueMapper.GetProjectvalue(project.getProject_id());
+        int temp;
+        int pro = 0;
+        for(Projectvalue p : l){
+            temp = p.getProject_progress();
+            pro = max(temp, pro);
+        }
+        project = projectMapper.GetProjectUni(project);
+        project.setProject_progress(pro);
+        map.put("Project", project);
         return new NewState("200", "该项目信息如下", map);
     }
 

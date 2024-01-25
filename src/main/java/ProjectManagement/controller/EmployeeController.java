@@ -4,8 +4,10 @@ package ProjectManagement.controller;
 import ProjectManagement.entity.*;
 import ProjectManagement.mapper.EmployeeMapper;
 import ProjectManagement.mapper.PersonnelarrangementMapper;
+import ProjectManagement.mapper.UsersMapper;
 import ProjectManagement.service.EmployeeService;
 import jakarta.annotation.Resource;
+import lombok.Getter;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -17,6 +19,9 @@ import static java.lang.Math.max;
 public class EmployeeController implements EmployeeService {
     @Resource
     private EmployeeMapper employeeMapper;//实例化对象并注入
+
+    @Resource
+    private UsersMapper usersMapper;//实例化对象并注入
     @Resource
     private PersonnelarrangementMapper personnelarrangementMapper;//实例化对象并注入
     private Map<String, Object> map;
@@ -78,6 +83,11 @@ public class EmployeeController implements EmployeeService {
             Personnelarrangement personnelarrangement = new Personnelarrangement();
             personnelarrangement.setEnd_date(employeePlus.getDate());
             l1 = employeeMapper.getemplistPlus1(employeePlus);//获取满足姓名要求的员工信息
+            for(int i = 0; i < l1.size(); i++){//设置用户名
+                EmployeePlus p = l1.get(i);
+                p.setUser_name(usersMapper.getuser_name(l1.get(i).getUser_id()));
+                l1.set(i, p);
+            }
             l2 = personnelarrangementMapper.getperson(personnelarrangement);//获取满足日期要求的员工id
 
             if(Objects.equals(employeePlus.getDate_json(), "")||employeePlus.getDate_json()==null) {//筛选日期为空
