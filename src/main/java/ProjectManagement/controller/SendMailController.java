@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.*;
 
 import ProjectManagement.mapper.UsersMapper;
-
+@CrossOrigin(origins = "*")//跨域
 @RestController
 public class SendMailController {
     @Autowired

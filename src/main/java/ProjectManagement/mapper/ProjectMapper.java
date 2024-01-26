@@ -29,7 +29,7 @@ public interface ProjectMapper {
     @Select("select project_name, project_id, status, end_date from project where project_name like (CONCAT('%',#{project_name},'%')) and status like (CONCAT('%',#{status},'%'))")
     List<ProjectWithProgress> GetProjectList2(Project project);//有条件获取项目列表
 
-    @Select("select project_name, project_id, status, end_date from project where status like (CONCAT('%',#{status},'%'))")
+    @Select("select project_name, project_id, status, end_date from project where status = #{status}")
     List<ProjectWithProgress> GetProjectList3(Project project);//当筛选信息不为全部但名称为全部时
 
     @Select("select project_name, project_id, status, end_date from project where project_name like (CONCAT('%',#{project_name},'%'))")
@@ -52,6 +52,9 @@ public interface ProjectMapper {
 
     @Select("select end_date from project where project_id=#{project_id}")
     Date GetProjectEdate(Integer project_id);//获取截止日期
+
+    @Select("select start_date, end_date from project where project_id=#{project_id}")
+    Project GetProjectalldate(Integer project_id);//获取起始和截止日期
 
     @Select("select contract_amount from project where project_id=#{project_id}")
     Integer GetProjectAmount(Integer project_id);//获取合同额

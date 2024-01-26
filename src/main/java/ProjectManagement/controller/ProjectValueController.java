@@ -129,8 +129,13 @@ public class ProjectValueController implements ProjectValueService {
     @RequestMapping(value = "/getpersonvalue", method = RequestMethod.POST)
     public NewState getpersonValue(@RequestBody(required = false) Projectvalue projectvalue) {
         map = new TreeMap<>();
-
-        map.put("personvalue", getpersonValue1(projectvalue));
+        int money = 0;
+        Map<String, Integer> map1 = getpersonValue1(projectvalue);
+        for (Map.Entry<String, Integer> entry : map1.entrySet()) {
+            money += entry.getValue();
+        }
+        map.put("personvalue", map1);
+        map.put("value", money);
         return new NewState("200", "该项目各月的人员产值如下", map);
     }
 
@@ -149,17 +154,21 @@ public class ProjectValueController implements ProjectValueService {
 
 
     //获取该项目各月的项目支撑产值
-    public Map<String,Integer> getprojectValue1(Projectvalue projectvalue) {
+    public Map<String, Integer> getprojectValue1(Projectvalue projectvalue) {
         map = new TreeMap<>();
 
         List<Projectvalue> list = projectValueMapper.GetProjectvalue(projectvalue.getProject_id());
+        int money = 0;
+        if(list.size()==0){//没有项目进度
+            Map<String,Integer> cp1=getallmonth(projectMapper.GetProjectalldate(projectvalue.getProject_id()).getStart_date(), projectMapper.GetProjectalldate(projectvalue.getProject_id()).getEnd_date());
+            return cp1;
+        }
         Date Dtemp = list.get(0).getChange_date();
         Integer Ptemp = list.get(0).getProject_progress();
         List<Date> dates = new LinkedList<>();
         dates.add(Dtemp);
         List<Integer> progress = new LinkedList<>();
         progress.add(Ptemp);
-        int money = 0;
         for(Projectvalue l : list){//获取每个月的最新进度
             if(isMonth(l.getChange_date(), Dtemp)){//如果是同一个月
                 Dtemp = l.getChange_date();
@@ -182,6 +191,7 @@ public class ProjectValueController implements ProjectValueService {
             cp1.put(sdf.format(dates.get(0)), 0);
         }else {
             cp1.put(sdf.format(dates.get(0)), ComputeProject(projectMapper.GetProjectAmount(projectvalue.getProject_id()), 0, progress.get(0)));
+            money += ComputeProject(projectMapper.GetProjectAmount(projectvalue.getProject_id()), 0, progress.get(0));
         }
         for(int i = 0; i < dates.size(); i++){
             if(i + 1 >= dates.size())
@@ -192,7 +202,15 @@ public class ProjectValueController implements ProjectValueService {
     }
     @RequestMapping(value = "/getprojectvalue", method = RequestMethod.POST)
     public NewState getprojectValue(@RequestBody(required = false) Projectvalue projectvalue) {
-        return new NewState("200", "该项目各月的项目支撑产值如下", getprojectValue1(projectvalue));
+        map = new TreeMap<>();
+        int money = 0;
+        Map<String, Integer> map1 = getprojectValue1(projectvalue);
+        for (Map.Entry<String, Integer> entry : map1.entrySet()) {
+            money += entry.getValue();
+        }
+        map.put("projectvalue", map1);
+        map.put("value", money);
+        return new NewState("200", "该项目各月的项目支撑产值如下", map);
     }
 
     //计算某项目的各月产值
@@ -254,7 +272,6 @@ public class ProjectValueController implements ProjectValueService {
 
     //获取某年人员支撑产值
     public State getannualPersonValue1(@RequestBody(required = false) Personnelarrangement personnelarrangement){
-
         List<Personnelarrangement> l1 = personnelArrangeController.Theyear(personnelarrangement);
         List<Personnelarrangement> l2 = personnelArrangeController.TheWholeyear(personnelarrangement);
         Map<String,Integer> map1 = getallmonth(personnelarrangement.getStart_date(), personnelarrangement.getEnd_date());//获取该年所有月，并将薪资设为0
@@ -281,9 +298,10 @@ public class ProjectValueController implements ProjectValueService {
     @RequestMapping(value = "/getannualPersonValue", method = RequestMethod.POST)
     public NewState getannualPersonValue(@RequestBody(required = false) Personnelarrangement personnelarrangement){
         map = new TreeMap<>();
-
-        map.put("personvalue", getannualPersonValue1(personnelarrangement).getMap());
-        map.put("value", getannualPersonValue1(personnelarrangement).getValue());
+        Map<String,Integer> map1 = getannualPersonValue1(personnelarrangement).getMap();
+        int money = getannualPersonValue1(personnelarrangement).getValue();
+        map.put("personvalue", map1);
+        map.put("value", money);
         return new NewState("200", "该年的人员支撑产值为：", map);
     }
 

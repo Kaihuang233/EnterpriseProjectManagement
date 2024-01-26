@@ -37,7 +37,7 @@ public class EmployeeController implements EmployeeService {
                 return new NewState("400", "权限不足");
             }
             employeeMapper.CreateEmployee(employee);
-            return new NewState("增添人员" + employee.getName() + "成功");
+            return new NewState("200", "增添人员" + employee.getName() + "成功");
         }
     }
 
@@ -55,11 +55,18 @@ public class EmployeeController implements EmployeeService {
         l.add("数据库人员");
         l.add("测试工程师");
         List<EmployeeList> employeeLists = new ArrayList<>();
+        List<Employee> ll = employeeMapper.getemplist();
         EmployeeList employeeList;
         for(String s : l){
             employeeList = new EmployeeList();
             employeeList.setPost(s);
-            employeeList.setEmployees(employeeMapper.getemplist());
+            List<Employee> lll = new ArrayList<>();
+            for(Employee epl : ll){
+                if(Objects.equals(epl.getPost(), s)){
+                    lll.add(epl);
+                }
+            }
+            employeeList.setEmployees(lll);
             employeeLists.add(employeeList);
         }
         map.put("EmployeeList", employeeLists);

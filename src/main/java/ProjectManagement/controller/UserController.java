@@ -204,7 +204,7 @@ public class UserController implements UserService {
     public NewState UpdatePassword(@RequestBody(required = false) ChangePassword changePassword) {
         map = new HashMap<>();
         try {
-                if(changePassword.getNew_password().length() < 20 && changePassword.getNew_password().length() > 6 && Objects.equals(usermapper.getpassword(changePassword.getUser_id()), changePassword.getPassword())) {
+                if(changePassword.getNew_password().length() < 21 && changePassword.getNew_password().length() > 5 && Objects.equals(usermapper.getpassword(changePassword.getUser_id()), changePassword.getPassword())) {
                     employeeMapper.updatePassword(changePassword.getNew_password(), changePassword.getUser_id());
                     return new NewState("200", "用户密码已修改");
                 }else{
